@@ -37,7 +37,13 @@ String getNextFileName() {
   return String(hi) + ".csv";
 }
 
-void logData(unsigned long time, float latitude, float longitude) {
+void logInitialTime() {
+  File file = SD.open(fileName, FILE_WRITE);
+  file.println(initialTime);
+  file.close();
+}
+
+void logLocation(unsigned long time, float latitude, float longitude) {
   String log = "";
   log += (time - initialTime);
   log += ',';
@@ -106,13 +112,14 @@ int gpsBegin() {
   initialTime = lastTime = GPS.getTime();
   initialLatitude = GPS.latitude();
   initialLongitude = GPS.longitude();
+  logInitialTime();
   digitalWrite(LED_BUILTIN, HIGH);
   return 1;
 }
 
 void gpsLoop() {
   if (GPS.available() && (GPS.getTime() - lastTime) >= 10) {
-    logData(lastTime = GPS.getTime(), GPS.latitude(), GPS.longitude());
+    logLocation(lastTime = GPS.getTime(), GPS.latitude(), GPS.longitude());
   }
 }
 
