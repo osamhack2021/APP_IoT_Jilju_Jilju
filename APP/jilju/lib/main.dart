@@ -5,77 +5,85 @@ import 'detail.dart';
 import 'home.dart';
 
 void main() {
-  runApp(const Jilju());
+  runApp(const JiljuApp());
 }
 
-class Jilju extends StatelessWidget {
-  const Jilju({Key? key}) : super(key: key);
+class JiljuApp extends StatelessWidget {
+  const JiljuApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '질주',
+      title: 'Jilju',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const JiljuMainPage(title: '질주'),
+      home: const JiljuMainPage(),
     );
   }
 }
 
 class JiljuMainPage extends StatefulWidget {
-  const JiljuMainPage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+  const JiljuMainPage({Key? key}) : super(key: key);
 
   @override
-  State<JiljuMainPage> createState() => _JiljuMainPageState();
+  State<JiljuMainPage> createState() => JiljuMainPageState();
 }
 
-class _JiljuMainPageState extends State<JiljuMainPage> {
-  var _index = 0;
+class JiljuMainPageState extends State<JiljuMainPage> {
   final _pages = [
     const HomePage(),
     const DetailPage(),
-    const SyncPage(),
+    SyncPage(),
   ];
+  int _index = 0;
+  bool _isProgressVisible = false;
+
+  void setProgressVisible(bool visible) {
+    setState(() {
+      _isProgressVisible = visible;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.title,
-          style: const TextStyle(color: Colors.black),
+    return Stack(
+      children: <Widget>[
+        Scaffold(
+          body: _pages[_index],
+          bottomNavigationBar: BottomNavigationBar(
+            onTap: (index) {
+              setState(() {
+                _index = index;
+              });
+            },
+            currentIndex: _index,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(label: 'Home', icon: Icon(Icons.home)),
+              BottomNavigationBarItem(
+                  label: 'Detail', icon: Icon(Icons.event_note)),
+              BottomNavigationBarItem(label: 'Sync', icon: Icon(Icons.sync)),
+            ],
+            showSelectedLabels: false,
+            showUnselectedLabels: false,
+          ),
         ),
-        backgroundColor: Colors.white,
-        centerTitle: true,
-      ),
-      body: _pages[_index],
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: (index) {
-          setState(() {
-            _index = index;
-          });
-        },
-        currentIndex: _index,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            label: 'Home',
-            icon: Icon(Icons.home)
+        Visibility(
+          visible: _isProgressVisible,
+          child: Container(
+            width: double.infinity,
+            height: double.infinity,
+            color: Colors.transparent,
+            child: const Center(
+              child: SizedBox(
+                width: 100,
+                height: 100,
+                child: CircularProgressIndicator(),
+              ),
+            ),
           ),
-          BottomNavigationBarItem(
-            label: 'Detail',
-            icon: Icon(Icons.event_note)
-          ),
-          BottomNavigationBarItem(
-            label: 'Sync',
-            icon: Icon(Icons.sync)
-          ),
-        ],
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-      ),
+        ),
+      ],
     );
   }
 }
