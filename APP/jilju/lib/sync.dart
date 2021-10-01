@@ -86,6 +86,16 @@ class _SyncPageState extends State<SyncPage> {
     return fileData!;
   }
 
+  Future<void> _connectToDevice(dynamic device) async {
+    if (device is BluetoothDevice) {
+      await _connectToBluetoothDevice(device);
+    } else if (device is _VirtualDevice) {
+      await _connectToVirtualDevice(device);
+    } else {
+      throw Exception();
+    }
+  }
+
   Future<void> _connectToBluetoothDevice(BluetoothDevice device) async {
     try {
       await device.connect();
@@ -115,7 +125,7 @@ class _SyncPageState extends State<SyncPage> {
     }
     _setProgressVisible(true);
     await _writeIntegerToCharacteristic(fileIdChar, password);
-    for (int fileId = 1;; fileId++) {
+    for (int fileId = await DatabaseManager.getNextJiljuId();; fileId++) {
       String fileData = await _readFileData(fileId, fileIdChar, fileDataChar);
       if (fileData == '') {
         break;
@@ -133,7 +143,7 @@ class _SyncPageState extends State<SyncPage> {
     if (password == null) {
       return;
     }
-    debugPrint((await DatabaseManager().getNextJiljuId()).toString());
+    debugPrint((await DatabaseManager.getNextJiljuId()).toString());
     _setProgressVisible(true);
     await Future.delayed(const Duration(seconds: 10), () async {
       _setProgressVisible(false);
@@ -234,11 +244,7 @@ class _SyncPageState extends State<SyncPage> {
             onTap: () async {
               if (!_connectBtnPressed) {
                 _connectBtnPressed = true;
-                if (_devices[index] is BluetoothDevice) {
-                  await _connectToBluetoothDevice(_devices[index]);
-                } else if (_devices[index] is _VirtualDevice) {
-                  await _connectToVirtualDevice(_devices[index]);
-                }
+                await _connectToDevice(_devices[index]);
                 _connectBtnPressed = false;
               }
             },

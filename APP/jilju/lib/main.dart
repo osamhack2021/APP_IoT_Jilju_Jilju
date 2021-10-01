@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:jilju/sync.dart';
 
 import 'detail.dart';
 import 'home.dart';
+import 'model/jilju.dart';
+import 'model/jilju_point.dart';
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
+  Hive.registerAdapter(JiljuAdapter());
+  Hive.registerAdapter(JiljuPointAdapter());
   runApp(const JiljuApp());
 }
 
