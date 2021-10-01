@@ -24,7 +24,7 @@ class DatabaseManager {
     for (Jilju jilju in box.values) {
       DateTime jiljuDateTime = jilju.startTimeToDateTime();
       if (fromDateTime.compareTo(jiljuDateTime) <= 0 &&
-          jiljuDateTime.compareTo(toDateTime) > 0) {
+          jiljuDateTime.compareTo(toDateTime) < 0) {
         jiljuList.add(jilju);
       }
     }
