@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
+import 'database.dart';
 import 'main.dart';
 import 'message.dart';
 
@@ -132,6 +133,7 @@ class _SyncPageState extends State<SyncPage> {
     if (password == null) {
       return;
     }
+    debugPrint((await DatabaseManager().getNextJiljuId()).toString());
     _setProgressVisible(true);
     await Future.delayed(const Duration(seconds: 10), () async {
       _setProgressVisible(false);
@@ -152,38 +154,39 @@ class _SyncPageState extends State<SyncPage> {
 
   Future<String?> _showPasswordInputDialog() {
     return showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('비밀번호 입력'),
-            content: TextField(
-              controller: _passwordController,
-              keyboardType: TextInputType.number,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                LengthLimitingTextInputFormatter(8),
-              ],
-            ),
-            actions: <Widget>[
-              ElevatedButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  String passwordStr = _passwordController.text;
-                  _passwordController.clear();
-                  Navigator.pop(context, passwordStr);
-                },
-              ),
-              ElevatedButton(
-                child: const Text('Cancel'),
-                onPressed: () {
-                  _passwordController.clear();
-                  Navigator.pop(context);
-                },
-              ),
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('비밀번호 입력'),
+          content: TextField(
+            controller: _passwordController,
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+              LengthLimitingTextInputFormatter(8),
             ],
-          );
-        });
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              child: const Text('OK'),
+              onPressed: () {
+                String passwordStr = _passwordController.text;
+                _passwordController.clear();
+                Navigator.pop(context, passwordStr);
+              },
+            ),
+            ElevatedButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                _passwordController.clear();
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _setProgressVisible(bool visible) {
@@ -203,7 +206,9 @@ class _SyncPageState extends State<SyncPage> {
       }
     });
     widget._flutterBlue.startScan();
-    _addDeviceToSet(_VirtualDevice('Virtual Device for Test'));
+    if (JiljuApp.testMode) {
+      _addDeviceToSet(_VirtualDevice('Virtual Device for Test'));
+    }
   }
 
   ListView _buildListViewOfDevices() {

@@ -9,7 +9,7 @@ class HomePage extends StatelessWidget {
       child: Text(
         'Home Page',
         style: TextStyle(fontSize: 40),
-      )
+      ),
     );
   }
 }

@@ -9,6 +9,7 @@ void main() {
 }
 
 class JiljuApp extends StatelessWidget {
+  static bool testMode = true;
   const JiljuApp({Key? key}) : super(key: key);
 
   @override

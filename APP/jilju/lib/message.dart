@@ -7,26 +7,27 @@ class MessageManager {
     'service not found',
     'characteristic not found',
     '비밀번호는 8자리 숫자입니다.',
-    '검색된 기기가 없습니다',
+    '검색된 기기가 없습니다!',
   ];
 
-  static void showMessageDialog(
-      BuildContext context, int messageId) {
+  static void showMessageDialog(BuildContext context, int messageId) {
     showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('알림'),
-            content: Text(messageString[messageId]),
-            actions: <Widget>[
-              ElevatedButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  }),
-            ],
-          );
-        });
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('알림'),
+          content: Text(messageString[messageId]),
+          actions: <Widget>[
+            ElevatedButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

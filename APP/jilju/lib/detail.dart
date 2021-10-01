@@ -9,7 +9,7 @@ class DetailPage extends StatelessWidget {
       child: Text(
         'Detail Page',
         style: TextStyle(fontSize: 40),
-      )
+      ),
     );
   }
 }
