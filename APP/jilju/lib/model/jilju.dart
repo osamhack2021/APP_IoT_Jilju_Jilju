@@ -33,4 +33,8 @@ class Jilju extends HiveObject {
     distance += points.last.calculateDistance(jiljuPoint);
     points.add(jiljuPoint);
   }
+
+  DateTime startTimeToDateTime() {
+    return DateTime.fromMillisecondsSinceEpoch(startTime * 1000);
+  }
 }
