@@ -18,23 +18,39 @@ class Jilju extends HiveObject {
   @HiveField(3)
   List<JiljuPoint> points;
 
-  Jilju(this.startTime)
-      : endTime = startTime,
+  Jilju(this.startTime, this.endTime, this.distance, this.points);
+
+  Jilju.fromFileData(String fileData)
+      : startTime = 0,
+        endTime = 0,
         distance = 0,
-        points = [JiljuPoint(0, 0, 0)];
+        points = [JiljuPoint(0, 0, 0)] {
+    List<String> tokens = fileData.split('\n');
+    startTime = endTime = int.parse(tokens[0]);
+    for (int i = 1; i < tokens.length - 1; i++) {
+      List<int> jiljuPointDatas = tokens[i].split(',').map(int.parse).toList();
+      _addJiljuPoint(JiljuPoint(
+          jiljuPointDatas[0], jiljuPointDatas[1], jiljuPointDatas[2]));
+    }
+  }
 
   /// Add a new JiljuPoint. The time of the new JiljuPoint must be greater
   /// than the time of the previous JiljuPoint.
-  void addJiljuPoint(JiljuPoint jiljuPoint) {
+  void _addJiljuPoint(JiljuPoint jiljuPoint) {
     if (points.last.time >= jiljuPoint.time) {
       throw Exception();
     }
-    endTime = jiljuPoint.time;
+    endTime = startTime + jiljuPoint.time;
     distance += points.last.calculateDistance(jiljuPoint);
     points.add(jiljuPoint);
   }
 
   DateTime startTimeToDateTime() {
     return DateTime.fromMillisecondsSinceEpoch(startTime * 1000);
+  }
+
+  @override
+  String toString() {
+    return '$startTime,$endTime,$distance,$points';
   }
 }

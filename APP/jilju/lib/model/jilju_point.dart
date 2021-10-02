@@ -35,4 +35,9 @@ class JiljuPoint extends HiveObject {
     return Geolocator.distanceBetween(
         _latitude(), _longitude(), other._latitude(), other._longitude());
   }
+
+  @override
+  String toString() {
+    return '$time,$x,$y';
+  }
 }

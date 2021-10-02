@@ -18,10 +18,10 @@ class JiljuAdapter extends TypeAdapter<Jilju> {
     };
     return Jilju(
       fields[0] as int,
-    )
-      ..endTime = fields[1] as int
-      ..distance = fields[2] as double
-      ..points = (fields[3] as List).cast<JiljuPoint>();
+      fields[1] as int,
+      fields[2] as double,
+      (fields[3] as List).cast<JiljuPoint>(),
+    );
   }
 
   @override

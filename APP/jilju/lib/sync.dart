@@ -8,6 +8,7 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'database.dart';
 import 'main.dart';
 import 'message.dart';
+import 'model/jilju.dart';
 
 class SyncPage extends StatefulWidget {
   SyncPage({Key? key}) : super(key: key);
@@ -130,8 +131,7 @@ class _SyncPageState extends State<SyncPage> {
       if (fileData == '') {
         break;
       }
-      debugPrint('fileId = $fileId');
-      debugPrint(fileData);
+      DatabaseManager.putJilju(fileId, Jilju.fromFileData(fileData));
     }
     await device.disconnect();
     _setProgressVisible(false);
@@ -143,12 +143,10 @@ class _SyncPageState extends State<SyncPage> {
     if (password == null) {
       return;
     }
-    debugPrint((await DatabaseManager.getNextJiljuId()).toString());
     _setProgressVisible(true);
-    await Future.delayed(const Duration(seconds: 10), () async {
-      _setProgressVisible(false);
-      MessageManager.showMessageDialog(context, 0);
-    });
+    DatabaseManager.loadSampleDatas();
+    _setProgressVisible(false);
+    MessageManager.showMessageDialog(context, 0);
   }
 
   Future<int?> _takePassword() async {
