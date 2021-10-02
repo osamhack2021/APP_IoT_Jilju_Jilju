@@ -22,16 +22,12 @@ class DatabaseManager {
   /// fromDateTime and is less then toDateTime.
   static Future<List<Jilju>> getJiljuList(
       DateTime fromDateTime, DateTime toDateTime) async {
-    List<Jilju> jiljuList = [];
     var box = await _jiljuBox;
-    for (Jilju jilju in box.values) {
+    return box.values.where((jilju) {
       DateTime jiljuDateTime = jilju.startTimeToDateTime();
-      if (fromDateTime.compareTo(jiljuDateTime) <= 0 &&
-          jiljuDateTime.compareTo(toDateTime) < 0) {
-        jiljuList.add(jilju);
-      }
-    }
-    return jiljuList;
+      return fromDateTime.compareTo(jiljuDateTime) <= 0 &&
+          jiljuDateTime.compareTo(toDateTime) < 0;
+    }).toList();
   }
 
   static Future<int> getNextJiljuId() async {
