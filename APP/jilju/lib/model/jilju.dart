@@ -34,6 +34,10 @@ class Jilju extends HiveObject {
     }
   }
 
+  int totalTime() {
+    return endTime - startTime;
+  }
+
   /// Add a new JiljuPoint. The time of the new JiljuPoint must be greater
   /// than the time of the previous JiljuPoint.
   void _addJiljuPoint(JiljuPoint jiljuPoint) {
@@ -52,5 +56,13 @@ class Jilju extends HiveObject {
   @override
   String toString() {
     return '$startTime,$endTime,$distance,$points';
+  }
+
+  static int getSumOfTotalTime(List<Jilju> jiljuList) {
+    return jiljuList.map((jilju) => jilju.totalTime()).reduce((a, b) => a + b);
+  }
+
+  static double getSumOfDistance(List<Jilju> jiljuList) {
+    return jiljuList.map((jilju) => jilju.distance).reduce((a, b) => a + b);
   }
 }
