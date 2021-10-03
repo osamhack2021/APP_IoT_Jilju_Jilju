@@ -50,14 +50,18 @@ class DatabaseManager {
     for (int i = 1; i < 3; i++) {
       sampleDatas.add(await readFileAsString('sample_data_$i.txt'));
     }
-    for (int i = 0; i < 4; i++) {
-      int startTime = DateTime.now()
-          .subtract(Duration(days: max(2 - i, 0), hours: 3 - i))
-          .millisecondsSinceEpoch;
-      startTime ~/= 1000;
-      String fileData =
-          startTime.toString() + '\n' + sampleDatas[i % sampleDatas.length];
-      DatabaseManager.putJilju(i + 1, Jilju.fromFileData(fileData));
+    int fileId = 1;
+    for (int day = -29; day <= 0; day++) {
+      for (int i = 1; i < 3; i++) {
+        for (int j = 0; Random().nextBool(); j++) {
+          int startTime = DateTime.now()
+              .add(Duration(days: day, hours: j))
+              .millisecondsSinceEpoch;
+          startTime ~/= 1000;
+          String fileData = startTime.toString() + '\n' + sampleDatas[i - 1];
+          DatabaseManager.putJilju(fileId++, Jilju.fromFileData(fileData));
+        }
+      }
     }
   }
 }

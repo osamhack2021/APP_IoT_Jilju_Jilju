@@ -34,8 +34,8 @@ class Jilju extends HiveObject {
     }
   }
 
-  int totalTime() {
-    return endTime - startTime;
+  Duration totalTime() {
+    return Duration(seconds: endTime - startTime);
   }
 
   /// Add a new JiljuPoint. The time of the new JiljuPoint must be greater
@@ -62,7 +62,9 @@ class Jilju extends HiveObject {
     return jiljuList.map((jilju) => jilju.distance).fold(0, (a, b) => a + b);
   }
 
-  static int getSumOfTotalTime(List<Jilju> jiljuList) {
-    return jiljuList.map((jilju) => jilju.totalTime()).fold(0, (a, b) => a + b);
+  static Duration getSumOfTotalTime(List<Jilju> jiljuList) {
+    return jiljuList
+        .map((jilju) => jilju.totalTime())
+        .fold(Duration.zero, (a, b) => a + b);
   }
 }

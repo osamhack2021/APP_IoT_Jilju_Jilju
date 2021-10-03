@@ -8,3 +8,8 @@ DateTime today() {
   DateTime now = DateTime.now();
   return DateTime.utc(now.year, now.month, now.day);
 }
+
+String durationToString(Duration duration) {
+  String str = duration.toString();
+  return str.substring(0, str.indexOf('.'));
+}

@@ -37,7 +37,8 @@ class _HomePageState extends State<HomePage> {
                     ),
                     Center(
                       child: Text(
-                        '${Jilju.getSumOfTotalTime(totalJiljuList)}',
+                        durationToString(
+                            Jilju.getSumOfTotalTime(totalJiljuList)),
                         style: const TextStyle(fontSize: 32),
                       ),
                     ),
@@ -52,7 +53,10 @@ class _HomePageState extends State<HomePage> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   elevation: 0,
-                  child: Center(child: Chart(jiljuLists)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Center(child: Chart(jiljuLists)),
+                  ),
                 ),
               ),
               SizedBox(
@@ -68,7 +72,8 @@ class _HomePageState extends State<HomePage> {
                     ),
                     Center(
                       child: Text(
-                        '${Jilju.getSumOfTotalTime(totalJiljuList)}',
+                        durationToString(
+                            Jilju.getSumOfTotalTime(totalJiljuList)),
                         style: const TextStyle(fontSize: 32),
                       ),
                     ),
@@ -80,7 +85,13 @@ class _HomePageState extends State<HomePage> {
         } else if (snapshot.hasError) {
           return const SizedBox.shrink();
         } else {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: SizedBox(
+              width: 100,
+              height: 100,
+              child: CircularProgressIndicator(),
+            ),
+          );
         }
       },
     );
