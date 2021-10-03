@@ -144,7 +144,7 @@ class _SyncPageState extends State<SyncPage> {
       return;
     }
     _setProgressVisible(true);
-    DatabaseManager.loadSampleDatas();
+    DatabaseManager.loadSampleDatas(password);
     Future.delayed(const Duration(seconds: 10), () {
       _setProgressVisible(false);
       MessageManager.showMessageDialog(context, 0);

@@ -8,10 +8,18 @@ class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> {
+  int touchedIndex = -1;
+
+  void updateBottomTexts(int idx) {
+    setState(() {
+      touchedIndex = idx;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -66,14 +74,18 @@ class _HomePageState extends State<HomePage> {
                   children: <Widget>[
                     Center(
                       child: Text(
-                        '${Jilju.getSumOfDistance(totalJiljuList).toStringAsFixed(1)} km',
+                        touchedIndex == -1
+                            ? ''
+                            : '${Jilju.getSumOfDistance(jiljuLists[touchedIndex]).toStringAsFixed(1)} km',
                         style: const TextStyle(fontSize: 32),
                       ),
                     ),
                     Center(
                       child: Text(
-                        durationToString(
-                            Jilju.getSumOfTotalTime(totalJiljuList)),
+                        touchedIndex == -1
+                            ? ''
+                            : durationToString(Jilju.getSumOfTotalTime(
+                                jiljuLists[touchedIndex])),
                         style: const TextStyle(fontSize: 32),
                       ),
                     ),

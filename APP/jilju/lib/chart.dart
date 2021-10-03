@@ -3,21 +3,28 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
+import 'package:jilju/home.dart';
 import 'package:jilju/util.dart';
 
 import 'model/jilju.dart';
 
-class Chart extends StatelessWidget {
+class Chart extends StatefulWidget {
   final List<List<Jilju>> jiljuLists;
-  late final double maxDistance;
+  late final double maxY;
   Chart(this.jiljuLists, {Key? key}) : super(key: key) {
-    maxDistance = max(
+    maxY = max(
         jiljuLists
-            .map((jiljuList) => Jilju.getSumOfDistance(jiljuList))
-            .reduce(max),
+                .map((jiljuList) => Jilju.getSumOfDistance(jiljuList))
+                .reduce(max) +
+            1,
         3);
   }
 
+  @override
+  State<Chart> createState() => _ChartState();
+}
+
+class _ChartState extends State<Chart> {
   @override
   Widget build(BuildContext context) {
     return BarChart(
@@ -26,7 +33,7 @@ class Chart extends StatelessWidget {
         alignment: BarChartAlignment.spaceAround,
         titlesData: titlesData,
         barTouchData: barTouchData,
-        maxY: maxDistance,
+        maxY: widget.maxY,
         gridData: FlGridData(show: false),
         borderData: FlBorderData(show: false),
       ),
@@ -34,26 +41,18 @@ class Chart extends StatelessWidget {
   }
 
   BarTouchData get barTouchData => BarTouchData(
-        enabled: false,
-        touchTooltipData: BarTouchTooltipData(
-          tooltipBgColor: Colors.transparent,
-          tooltipPadding: const EdgeInsets.all(0),
-          tooltipMargin: 8,
-          getTooltipItem: (
-            BarChartGroupData group,
-            int groupIndex,
-            BarChartRodData rod,
-            int rodIndex,
-          ) {
-            return BarTooltipItem(
-              rod.y.round().toString(),
-              const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            );
-          },
-        ),
+        enabled: true,
+        touchCallback: (event, response) {
+          if (!event.isInterestedForInteractions ||
+              response == null ||
+              response.spot == null) {
+            return;
+          }
+          context
+              .findAncestorStateOfType<HomePageState>()!
+              .updateBottomTexts(response.spot!.touchedBarGroupIndex);
+        },
+        handleBuiltInTouches: false,
       );
 
   FlTitlesData get titlesData => FlTitlesData(
@@ -62,7 +61,7 @@ class Chart extends StatelessWidget {
           showTitles: true,
           getTitles: (double value) {
             DateTime dateTime = today().subtract(
-                Duration(days: (jiljuLists.length - 1) - value.toInt()));
+                Duration(days: (widget.jiljuLists.length - 1) - value.toInt()));
             return DateFormat('MM/dd').format(dateTime);
           },
           getTextStyles: (context, value) => const TextStyle(
@@ -70,6 +69,7 @@ class Chart extends StatelessWidget {
             fontSize: 20,
           ),
           margin: 20,
+          interval: (((widget.jiljuLists.length - 1) ~/ 7) + 1).toDouble(),
         ),
         leftTitles: SideTitles(
           showTitles: true,
@@ -79,13 +79,13 @@ class Chart extends StatelessWidget {
             fontSize: 20,
           ),
           margin: 20,
-          interval: max((maxDistance ~/ 5).toDouble(), 1),
+          interval: ((max(widget.maxY - 1, 0) ~/ 5) + 1).toDouble(),
         ),
         topTitles: SideTitles(showTitles: false),
         rightTitles: SideTitles(showTitles: false),
       );
 
-  List<BarChartGroupData> get barGroups => jiljuLists
+  List<BarChartGroupData> get barGroups => widget.jiljuLists
       .asMap()
       .map(
         (idx, jiljuList) => MapEntry(

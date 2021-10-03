@@ -45,15 +45,16 @@ class DatabaseManager {
     return box.keys.isEmpty ? 1 : (box.keys.last + 1);
   }
 
-  static Future<void> loadSampleDatas() async {
+  static Future<void> loadSampleDatas(int seed) async {
     List<String> sampleDatas = [];
     for (int i = 1; i < 3; i++) {
       sampleDatas.add(await readFileAsString('sample_data_$i.txt'));
     }
+    Random random = Random(seed);
     int fileId = 1;
     for (int day = -29; day <= 0; day++) {
       for (int i = 1; i < 3; i++) {
-        for (int j = 0; Random().nextBool(); j++) {
+        for (int j = 0; random.nextBool(); j++) {
           int startTime = DateTime.now()
               .add(Duration(days: day, hours: j))
               .millisecondsSinceEpoch;
