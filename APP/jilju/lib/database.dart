@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:hive_flutter/hive_flutter.dart';
 
-import 'file.dart';
+import 'util.dart';
 import 'model/jilju.dart';
 
 class DatabaseManager {
@@ -20,7 +20,7 @@ class DatabaseManager {
 
   /// Returns all Jiljus whose startTime is greater than or equal to
   /// fromDateTime and is less then toDateTime.
-  static Future<List<Jilju>> getJiljuList(
+  static Future<List<Jilju>> _getJiljuList(
       DateTime fromDateTime, DateTime toDateTime) async {
     var box = await _jiljuBox;
     return box.values.where((jilju) {
@@ -28,6 +28,16 @@ class DatabaseManager {
       return fromDateTime.compareTo(jiljuDateTime) <= 0 &&
           jiljuDateTime.compareTo(toDateTime) < 0;
     }).toList();
+  }
+
+  static Future<List<List<Jilju>>> getJiljuLists(
+      DateTime startDate, int count) async {
+    List<List<Jilju>> jiljuList = [];
+    for (int idx = 0; idx < count; idx++) {
+      jiljuList.add(await _getJiljuList(startDate.add(Duration(days: idx)),
+          startDate.add(Duration(days: idx + 1))));
+    }
+    return jiljuList;
   }
 
   static Future<int> getNextJiljuId() async {
@@ -38,7 +48,7 @@ class DatabaseManager {
   static Future<void> loadSampleDatas() async {
     List<String> sampleDatas = [];
     for (int i = 1; i < 3; i++) {
-      sampleDatas.add(await FileManager.readFileAsString('sample_data_$i.txt'));
+      sampleDatas.add(await readFileAsString('sample_data_$i.txt'));
     }
     for (int i = 0; i < 4; i++) {
       int startTime = DateTime.now()

@@ -58,11 +58,11 @@ class Jilju extends HiveObject {
     return '$startTime,$endTime,$distance,$points';
   }
 
-  static int getSumOfTotalTime(List<Jilju> jiljuList) {
-    return jiljuList.map((jilju) => jilju.totalTime()).reduce((a, b) => a + b);
+  static double getSumOfDistance(List<Jilju> jiljuList) {
+    return jiljuList.map((jilju) => jilju.distance).fold(0, (a, b) => a + b);
   }
 
-  static double getSumOfDistance(List<Jilju> jiljuList) {
-    return jiljuList.map((jilju) => jilju.distance).reduce((a, b) => a + b);
+  static int getSumOfTotalTime(List<Jilju> jiljuList) {
+    return jiljuList.map((jilju) => jilju.totalTime()).fold(0, (a, b) => a + b);
   }
 }

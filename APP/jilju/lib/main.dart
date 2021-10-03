@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:jilju/sync.dart';
 
 import 'detail.dart';
 import 'home.dart';
+import 'sync.dart';
 import 'model/jilju.dart';
 import 'model/jilju_point.dart';
 

@@ -33,7 +33,8 @@ class JiljuPoint extends HiveObject {
   /// Calculates the distance from other JiljuPoint and returns it in km.
   double calculateDistance(JiljuPoint other) {
     return Geolocator.distanceBetween(
-        _latitude(), _longitude(), other._latitude(), other._longitude());
+            _latitude(), _longitude(), other._latitude(), other._longitude()) /
+        1000;
   }
 
   @override
