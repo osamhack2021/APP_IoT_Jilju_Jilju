@@ -9,11 +9,13 @@ import 'package:jilju/util.dart';
 import 'model/jilju.dart';
 
 class Chart extends StatefulWidget {
-  final List<List<Jilju>> jiljuLists;
+  final List<List<Jilju>> _jiljuLists;
+  final double _barChartRodDataWidth;
   late final double maxY;
-  Chart(this.jiljuLists, {Key? key}) : super(key: key) {
+  Chart(this._jiljuLists, this._barChartRodDataWidth, {Key? key})
+      : super(key: key) {
     maxY = max(
-        jiljuLists
+        _jiljuLists
                 .map((jiljuList) => Jilju.getSumOfDistance(jiljuList))
                 .reduce(max) +
             1,
@@ -60,8 +62,8 @@ class _ChartState extends State<Chart> {
         bottomTitles: SideTitles(
           showTitles: true,
           getTitles: (double value) {
-            DateTime dateTime = today().subtract(
-                Duration(days: (widget.jiljuLists.length - 1) - value.toInt()));
+            DateTime dateTime = today().subtract(Duration(
+                days: (widget._jiljuLists.length - 1) - value.toInt()));
             return DateFormat('MM/dd').format(dateTime);
           },
           getTextStyles: (context, value) => const TextStyle(
@@ -69,7 +71,7 @@ class _ChartState extends State<Chart> {
             fontSize: 20,
           ),
           margin: 20,
-          interval: (((widget.jiljuLists.length - 1) ~/ 7) + 1).toDouble(),
+          interval: (max(widget._jiljuLists.length ~/ 4, 1)).toDouble(),
         ),
         leftTitles: SideTitles(
           showTitles: true,
@@ -85,7 +87,7 @@ class _ChartState extends State<Chart> {
         rightTitles: SideTitles(showTitles: false),
       );
 
-  List<BarChartGroupData> get barGroups => widget.jiljuLists
+  List<BarChartGroupData> get barGroups => widget._jiljuLists
       .asMap()
       .map(
         (idx, jiljuList) => MapEntry(
@@ -96,7 +98,7 @@ class _ChartState extends State<Chart> {
               BarChartRodData(
                 y: Jilju.getSumOfDistance(jiljuList),
                 colors: [Colors.lightBlueAccent, Colors.greenAccent],
-                width: 20,
+                width: widget._barChartRodDataWidth,
               )
             ],
           ),
