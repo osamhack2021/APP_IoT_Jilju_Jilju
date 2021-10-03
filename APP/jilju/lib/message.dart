@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class MessageManager {
   static final List<String> messageString = [
-    '모든 데이터를 동기화하였습니다.',
+    '동기화가 완료되었습니다.',
     '기기에 연결할 수 없습니다.',
     'service not found',
     'characteristic not found',

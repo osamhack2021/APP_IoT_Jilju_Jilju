@@ -35,11 +35,11 @@ class HomePageState extends State<HomePage> {
               jiljuLists.reduce((a, b) => [...a, ...b]);
           return Column(
             children: <Widget>[
-              const SizedBox(height: 32),
+              const SizedBox(height: 20),
               ToggleSwitch(
-                minWidth: 128,
-                minHeight: 64,
-                fontSize: 20,
+                minWidth: 100,
+                minHeight: 50,
+                fontSize: 16,
                 initialLabelIndex: _recentDays.index,
                 totalSwitches: 2,
                 labels: RecentDays.values
@@ -53,21 +53,21 @@ class HomePageState extends State<HomePage> {
                 },
               ),
               SizedBox(
-                height: 120,
+                height: 80,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Center(
                       child: Text(
                         '${Jilju.getSumOfDistance(totalJiljuList).toStringAsFixed(1)} km',
-                        style: const TextStyle(fontSize: 32),
+                        style: const TextStyle(fontSize: 24),
                       ),
                     ),
                     Center(
                       child: Text(
                         durationToString(
                             Jilju.getSumOfTotalTime(totalJiljuList)),
-                        style: const TextStyle(fontSize: 32),
+                        style: const TextStyle(fontSize: 24),
                       ),
                     ),
                   ],
@@ -75,22 +75,16 @@ class HomePageState extends State<HomePage> {
               ),
               Expanded(
                 child: Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 24),
+                  margin: const EdgeInsets.symmetric(horizontal: 10),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                   elevation: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Center(
-                      child: Chart(jiljuLists,
-                          _recentDays == RecentDays.recent7days ? 20 : 10),
-                    ),
-                  ),
+                  child: Chart(jiljuLists),
                 ),
               ),
               SizedBox(
-                height: 120,
+                height: 80,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
@@ -99,7 +93,7 @@ class HomePageState extends State<HomePage> {
                         _touchedIndex == -1
                             ? ''
                             : '${Jilju.getSumOfDistance(jiljuLists[_touchedIndex]).toStringAsFixed(1)} km',
-                        style: const TextStyle(fontSize: 32),
+                        style: const TextStyle(fontSize: 24),
                       ),
                     ),
                     Center(
@@ -108,7 +102,7 @@ class HomePageState extends State<HomePage> {
                             ? ''
                             : durationToString(Jilju.getSumOfTotalTime(
                                 jiljuLists[_touchedIndex])),
-                        style: const TextStyle(fontSize: 32),
+                        style: const TextStyle(fontSize: 24),
                       ),
                     ),
                   ],

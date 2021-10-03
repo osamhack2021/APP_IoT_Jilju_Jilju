@@ -218,6 +218,10 @@ class _SyncPageState extends State<SyncPage> {
     widget._flutterBlue.startScan();
     if (JiljuApp.testMode) {
       _addDeviceToSet(_VirtualDevice('Virtual Device for Test'));
+      _addDeviceToSet(_VirtualDevice('Virtual Device for Test'));
+      _addDeviceToSet(_VirtualDevice('Virtual Device for Test'));
+      _addDeviceToSet(_VirtualDevice('Virtual Device for Test'));
+      _addDeviceToSet(_VirtualDevice('Virtual Device for Test'));
     }
   }
 
@@ -225,17 +229,17 @@ class _SyncPageState extends State<SyncPage> {
     return ListView.separated(
       itemBuilder: (context, index) {
         return SizedBox(
-          height: 80,
+          height: 40,
           child: InkWell(
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: <Widget>[
-                  const Icon(Icons.devices, size: 32),
+                  const Icon(Icons.devices, size: 20),
                   Expanded(
                     child: Center(
                       child: Text(_devices[index].id.toString(),
-                          style: const TextStyle(fontSize: 32)),
+                          style: const TextStyle(fontSize: 20)),
                     ),
                   ),
                 ],
@@ -262,11 +266,23 @@ class _SyncPageState extends State<SyncPage> {
       return Center(
         child: Text(
           MessageManager.messageString[5],
-          style: const TextStyle(fontSize: 32),
+          style: const TextStyle(fontSize: 20),
         ),
       );
     } else {
-      return _buildListViewOfDevices();
+      return Column(
+        children: <Widget>[
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: Text(
+              '검색된 기기',
+              style: TextStyle(fontSize: 20),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(child: _buildListViewOfDevices()),
+        ],
+      );
     }
   }
 }

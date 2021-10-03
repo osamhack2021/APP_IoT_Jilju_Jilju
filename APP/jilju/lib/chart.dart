@@ -10,10 +10,8 @@ import 'model/jilju.dart';
 
 class Chart extends StatefulWidget {
   final List<List<Jilju>> _jiljuLists;
-  final double _barChartRodDataWidth;
   late final double maxY;
-  Chart(this._jiljuLists, this._barChartRodDataWidth, {Key? key})
-      : super(key: key) {
+  Chart(this._jiljuLists, {Key? key}) : super(key: key) {
     maxY = max(
         _jiljuLists
                 .map((jiljuList) => Jilju.getSumOfDistance(jiljuList))
@@ -61,6 +59,7 @@ class _ChartState extends State<Chart> {
         show: true,
         bottomTitles: SideTitles(
           showTitles: true,
+          reservedSize: 20,
           getTitles: (double value) {
             DateTime dateTime = today().subtract(Duration(
                 days: (widget._jiljuLists.length - 1) - value.toInt()));
@@ -68,19 +67,16 @@ class _ChartState extends State<Chart> {
           },
           getTextStyles: (context, value) => const TextStyle(
             color: Color(0xff7589a2),
-            fontSize: 20,
+            fontSize: 10,
           ),
-          margin: 20,
-          interval: (max(widget._jiljuLists.length ~/ 4, 1)).toDouble(),
         ),
         leftTitles: SideTitles(
           showTitles: true,
-          reservedSize: 40,
+          reservedSize: 20,
           getTextStyles: (context, value) => const TextStyle(
             color: Color(0xff7589a2),
-            fontSize: 20,
+            fontSize: 10,
           ),
-          margin: 20,
           interval: ((max(widget.maxY - 1, 0) ~/ 5) + 1).toDouble(),
         ),
         topTitles: SideTitles(showTitles: false),
@@ -98,7 +94,7 @@ class _ChartState extends State<Chart> {
               BarChartRodData(
                 y: Jilju.getSumOfDistance(jiljuList),
                 colors: [Colors.lightBlueAccent, Colors.greenAccent],
-                width: widget._barChartRodDataWidth,
+                width: 20,
               )
             ],
           ),
