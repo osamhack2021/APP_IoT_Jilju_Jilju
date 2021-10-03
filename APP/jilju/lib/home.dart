@@ -80,7 +80,9 @@ class HomePageState extends State<HomePage> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   elevation: 0,
-                  child: Chart(jiljuLists),
+                  child: jiljuLists.length <= 7
+                      ? JiljuBarChart(jiljuLists)
+                      : JiljuLineChart(jiljuLists),
                 ),
               ),
               SizedBox(
