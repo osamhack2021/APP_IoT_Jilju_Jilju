@@ -73,7 +73,8 @@ class HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              Expanded(
+              AspectRatio(
+                aspectRatio: 1.2,
                 child: Card(
                   margin: const EdgeInsets.symmetric(horizontal: 10),
                   shape: RoundedRectangleBorder(

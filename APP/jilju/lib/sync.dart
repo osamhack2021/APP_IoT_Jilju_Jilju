@@ -179,18 +179,18 @@ class _SyncPageState extends State<SyncPage> {
           ),
           actions: <Widget>[
             ElevatedButton(
+              child: const Text('CANCEL'),
+              onPressed: () {
+                _passwordController.clear();
+                Navigator.pop(context);
+              },
+            ),
+            ElevatedButton(
               child: const Text('OK'),
               onPressed: () {
                 String passwordStr = _passwordController.text;
                 _passwordController.clear();
                 Navigator.pop(context, passwordStr);
-              },
-            ),
-            ElevatedButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                _passwordController.clear();
-                Navigator.pop(context);
               },
             ),
           ],
@@ -224,9 +224,9 @@ class _SyncPageState extends State<SyncPage> {
   ListView _buildListViewOfDevices() {
     return ListView.separated(
       itemBuilder: (context, index) {
-        return SizedBox(
-          height: 40,
-          child: InkWell(
+        return InkWell(
+          child: SizedBox(
+            height: 40,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
@@ -241,14 +241,14 @@ class _SyncPageState extends State<SyncPage> {
                 ],
               ),
             ),
-            onTap: () async {
-              if (!_connectBtnPressed) {
-                _connectBtnPressed = true;
-                await _connectToDevice(_devices[index]);
-                _connectBtnPressed = false;
-              }
-            },
           ),
+          onTap: () async {
+            if (!_connectBtnPressed) {
+              _connectBtnPressed = true;
+              await _connectToDevice(_devices[index]);
+              _connectBtnPressed = false;
+            }
+          },
         );
       },
       separatorBuilder: (context, index) => const Divider(),

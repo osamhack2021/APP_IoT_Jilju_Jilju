@@ -41,6 +41,7 @@ dependencies:
   fl_chart: ^0.40.0
   intl: ^0.17.0
   toggle_switch: ^1.2.0
+  syncfusion_flutter_datepicker: ^19.3.43
 
 dev_dependencies:
   flutter_test:
