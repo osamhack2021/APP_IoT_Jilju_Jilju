@@ -218,10 +218,6 @@ class _SyncPageState extends State<SyncPage> {
     widget._flutterBlue.startScan();
     if (JiljuApp.testMode) {
       _addDeviceToSet(_VirtualDevice('Virtual Device for Test'));
-      _addDeviceToSet(_VirtualDevice('Virtual Device for Test'));
-      _addDeviceToSet(_VirtualDevice('Virtual Device for Test'));
-      _addDeviceToSet(_VirtualDevice('Virtual Device for Test'));
-      _addDeviceToSet(_VirtualDevice('Virtual Device for Test'));
     }
   }
 

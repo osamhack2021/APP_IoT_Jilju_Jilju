@@ -80,9 +80,12 @@ class HomePageState extends State<HomePage> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   elevation: 0,
-                  child: jiljuLists.length <= 7
-                      ? JiljuBarChart(jiljuLists)
-                      : JiljuLineChart(jiljuLists),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 20, 20, 0),
+                    child: jiljuLists.length <= 7
+                        ? JiljuBarChart(jiljuLists)
+                        : JiljuLineChart(jiljuLists),
+                  ),
                 ),
               ),
               SizedBox(
