@@ -3,15 +3,14 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
-import 'package:jilju/home.dart';
-import 'package:jilju/util.dart';
 
 import 'model/jilju.dart';
 
 class JiljuBarChart extends StatefulWidget {
   final Map<DateTime, List<Jilju>> _jiljuMap;
+  final void Function(FlTouchEvent, BarTouchResponse?)? _touchCallback;
   final double maxY;
-  JiljuBarChart(this._jiljuMap, {Key? key})
+  JiljuBarChart(this._jiljuMap, this._touchCallback, {Key? key})
       : maxY = getMaxY(_jiljuMap),
         super(key: key);
 
@@ -85,16 +84,7 @@ class _JiljuBarChartState extends State<JiljuBarChart> {
 
   BarTouchData get barTouchData => BarTouchData(
         enabled: true,
-        touchCallback: (event, response) {
-          if (!event.isInterestedForInteractions ||
-              response == null ||
-              response.spot == null) {
-            return;
-          }
-          context
-              .findAncestorStateOfType<HomePageState>()!
-              .updateBottomTexts(response.spot!.touchedBarGroupIndex);
-        },
+        touchCallback: widget._touchCallback,
         handleBuiltInTouches: false,
       );
 }
@@ -151,8 +141,7 @@ class _JiljuLineChartState extends State<JiljuLineChart> {
         bottomTitles: SideTitles(
           showTitles: true,
           getTitles: (value) {
-            DateTime dateTime = today().subtract(
-                Duration(days: (widget._jiljuMap.length - 1) - value.toInt()));
+            DateTime dateTime = widget._jiljuMap.keys.toList()[value.toInt()];
             return DateFormat('MM/dd').format(dateTime);
           },
           getTextStyles: (context, value) => const TextStyle(

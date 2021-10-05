@@ -8,7 +8,6 @@ class MessageManager {
     'characteristic not found',
     '비밀번호는 8자리 숫자입니다.',
     '검색된 기기가 없습니다!',
-    '뜀걸음 이력이 없습니다!',
   ];
 
   static void showMessageDialog(BuildContext context, int messageId) {

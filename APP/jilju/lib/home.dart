@@ -9,18 +9,12 @@ class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  HomePageState createState() => HomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> {
   RecentDays _recentDays = RecentDays.recent7days;
   int _touchedIndex = -1;
-
-  void updateBottomTexts(int index) {
-    setState(() {
-      _touchedIndex = index;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +79,17 @@ class HomePageState extends State<HomePage> {
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(10, 20, 20, 0),
                     child: jiljuMap.length <= 7
-                        ? JiljuBarChart(jiljuMap)
+                        ? JiljuBarChart(jiljuMap, (event, response) {
+                            if (!event.isInterestedForInteractions ||
+                                response == null ||
+                                response.spot == null) {
+                              return;
+                            }
+                            setState(() {
+                              _touchedIndex =
+                                  response.spot!.touchedBarGroupIndex;
+                            });
+                          })
                         : JiljuLineChart(jiljuMap),
                   ),
                 ),
@@ -117,16 +121,8 @@ class HomePageState extends State<HomePage> {
               ),
             ],
           );
-        } else if (snapshot.hasError) {
-          return const SizedBox.shrink();
         } else {
-          return const Center(
-            child: SizedBox(
-              width: 100,
-              height: 100,
-              child: CircularProgressIndicator(),
-            ),
-          );
+          return const SizedBox.shrink();
         }
       },
     );

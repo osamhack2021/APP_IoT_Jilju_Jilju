@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:jilju/util.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
+import 'chart.dart';
 import 'database.dart';
-import 'message.dart';
 import 'model/jilju.dart';
 
 class DetailPage extends StatefulWidget {
@@ -90,80 +90,85 @@ class _DetailPageState extends State<DetailPage> {
         thickness: 1,
       ),
       itemCount: jiljuList.length,
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: DatabaseManager.getJiljuMap(
-          _startDate, _endDate.difference(_startDate).inDays + 1),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          Map<DateTime, List<Jilju>> jiljuMap =
-              snapshot.data as Map<DateTime, List<Jilju>>;
-          List<Jilju> totalJiljuList =
-              jiljuMap.values.reduce((a, b) => [...a, ...b]);
-          return Column(
-            children: <Widget>[
-              InkWell(
-                child: SizedBox(
-                  height: 60,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      children: <Widget>[
-                        const Icon(Icons.event_note, size: 20),
-                        Expanded(
-                          child: Text(
-                            '${dateToString(_startDate)} ~ ${dateToString(_endDate)}',
-                            style: const TextStyle(fontSize: 20),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ],
+    return Column(
+      children: <Widget>[
+        InkWell(
+          child: SizedBox(
+            height: 60,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: <Widget>[
+                  const Icon(Icons.event_note, size: 20),
+                  Expanded(
+                    child: Text(
+                      '${dateToString(_startDate)} ~ ${dateToString(_endDate)}',
+                      style: const TextStyle(fontSize: 20),
+                      textAlign: TextAlign.center,
                     ),
                   ),
-                ),
-                onTap: () async {
-                  PickerDateRange? pickerDateRange =
-                      await _showDatePickerDialog();
-                  if (pickerDateRange == null) {
-                    return;
-                  }
-                  setState(() {
-                    _startDate = pickerDateRange.startDate!;
-                    _endDate = pickerDateRange.endDate ?? _startDate;
-                  });
-                },
+                ],
               ),
-              const Divider(
-                height: 1,
-                thickness: 1,
-              ),
-              Expanded(
-                  child: totalJiljuList.isEmpty
-                      ? Center(
-                          child: Text(
-                            MessageManager.messageString[6],
-                            style: const TextStyle(fontSize: 20),
-                          ),
-                        )
-                      : _buildListViewOfJiljus(totalJiljuList)),
-            ],
-          );
-        } else if (snapshot.hasError) {
-          return const SizedBox.shrink();
-        } else {
-          return const Center(
-            child: SizedBox(
-              width: 100,
-              height: 100,
-              child: CircularProgressIndicator(),
             ),
-          );
-        }
-      },
+          ),
+          onTap: () async {
+            PickerDateRange? pickerDateRange = await _showDatePickerDialog();
+            if (pickerDateRange == null) {
+              return;
+            }
+            setState(() {
+              _startDate = pickerDateRange.startDate!;
+              _endDate = pickerDateRange.endDate ?? _startDate;
+            });
+          },
+        ),
+        Expanded(
+          child: FutureBuilder(
+            future: DatabaseManager.getJiljuMap(
+                _startDate, _endDate.difference(_startDate).inDays + 1),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                Map<DateTime, List<Jilju>> jiljuMap =
+                    snapshot.data as Map<DateTime, List<Jilju>>;
+                List<Jilju> totalJiljuList =
+                    jiljuMap.values.reduce((a, b) => [...a, ...b]);
+                return SingleChildScrollView(
+                  child: Column(
+                    children: <Widget>[
+                      AspectRatio(
+                        aspectRatio: 1.2,
+                        child: Card(
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 0,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 20, 20, 0),
+                            child: jiljuMap.length <= 7
+                                ? JiljuBarChart(jiljuMap, null)
+                                : JiljuLineChart(jiljuMap),
+                          ),
+                        ),
+                      ),
+                      _buildListViewOfJiljus(totalJiljuList),
+                    ],
+                  ),
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 }
