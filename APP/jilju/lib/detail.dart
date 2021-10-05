@@ -49,7 +49,7 @@ class _DetailPageState extends State<DetailPage> {
       itemBuilder: (context, index) {
         return InkWell(
           child: SizedBox(
-            height: 40,
+            height: 60,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
@@ -85,74 +85,25 @@ class _DetailPageState extends State<DetailPage> {
           onTap: () {},
         );
       },
-      separatorBuilder: (context, index) => const Divider(),
+      separatorBuilder: (context, index) => const Divider(
+        height: 1,
+        thickness: 1,
+      ),
       itemCount: jiljuList.length,
     );
   }
 
-/*
-  ListView _buildListViewOfJiljus(List<Jilju> jiljuList) {
-    return ListView.separated(
-      itemBuilder: (context, index) {
-        return InkWell(
-          child: SizedBox(
-            height: 40,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: <Widget>[
-                  const Icon(Icons.directions_run, size: 20),
-                  Expanded(
-                    child: Center(
-                      child: Column(
-                        children: <Widget>[
-                          Text(
-                            '${dateTimeToString(secondsToDateTime(jiljuList[index].startTime))}'
-                            ' ~ ${timeToString(secondsToDateTime(jiljuList[index].endTime))}',
-                            style: const TextStyle(fontSize: 16),
-                            textAlign: TextAlign.center,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              Text(
-                                '${jiljuList[index].distance.toStringAsFixed(1)} km',
-                                style: const TextStyle(fontSize: 16),
-                                textAlign: TextAlign.center,
-                              ),
-                              Text(
-                                durationToString(jiljuList[index].totalTime()),
-                                style: const TextStyle(fontSize: 16),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          onTap: () {},
-        );
-      },
-      separatorBuilder: (context, index) => const Divider(),
-      itemCount: jiljuList.length,
-    );
-  }
-*/
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: DatabaseManager.getJiljuLists(
+      future: DatabaseManager.getJiljuMap(
           _startDate, _endDate.difference(_startDate).inDays + 1),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          List<List<Jilju>> jiljuLists = snapshot.data as List<List<Jilju>>;
+          Map<DateTime, List<Jilju>> jiljuMap =
+              snapshot.data as Map<DateTime, List<Jilju>>;
           List<Jilju> totalJiljuList =
-              jiljuLists.reduce((a, b) => [...a, ...b]);
+              jiljuMap.values.reduce((a, b) => [...a, ...b]);
           return Column(
             children: <Widget>[
               InkWell(
@@ -164,10 +115,10 @@ class _DetailPageState extends State<DetailPage> {
                       children: <Widget>[
                         const Icon(Icons.event_note, size: 20),
                         Expanded(
-                          child: Center(
-                            child: Text(
-                                '${dateToString(_startDate)} ~ ${dateToString(_endDate)}',
-                                style: const TextStyle(fontSize: 20)),
+                          child: Text(
+                            '${dateToString(_startDate)} ~ ${dateToString(_endDate)}',
+                            style: const TextStyle(fontSize: 20),
+                            textAlign: TextAlign.center,
                           ),
                         ),
                       ],
@@ -186,7 +137,10 @@ class _DetailPageState extends State<DetailPage> {
                   });
                 },
               ),
-              const Divider(),
+              const Divider(
+                height: 1,
+                thickness: 1,
+              ),
               Expanded(
                   child: totalJiljuList.isEmpty
                       ? Center(

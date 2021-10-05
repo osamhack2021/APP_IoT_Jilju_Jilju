@@ -25,14 +25,15 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: DatabaseManager.getJiljuLists(
+      future: DatabaseManager.getJiljuMap(
           today().subtract(Duration(days: _recentDays.days() - 1)),
           _recentDays.days()),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          List<List<Jilju>> jiljuLists = snapshot.data as List<List<Jilju>>;
+          Map<DateTime, List<Jilju>> jiljuMap =
+              snapshot.data as Map<DateTime, List<Jilju>>;
           List<Jilju> totalJiljuList =
-              jiljuLists.reduce((a, b) => [...a, ...b]);
+              jiljuMap.values.reduce((a, b) => [...a, ...b]);
           return Column(
             children: <Widget>[
               const SizedBox(height: 20),
@@ -83,9 +84,9 @@ class HomePageState extends State<HomePage> {
                   elevation: 0,
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(10, 20, 20, 0),
-                    child: jiljuLists.length <= 7
-                        ? JiljuBarChart(jiljuLists)
-                        : JiljuLineChart(jiljuLists),
+                    child: jiljuMap.length <= 7
+                        ? JiljuBarChart(jiljuMap)
+                        : JiljuLineChart(jiljuMap),
                   ),
                 ),
               ),
@@ -98,7 +99,7 @@ class HomePageState extends State<HomePage> {
                       child: Text(
                         _touchedIndex == -1
                             ? ''
-                            : '${Jilju.getSumOfDistance(jiljuLists[_touchedIndex]).toStringAsFixed(1)} km',
+                            : '${Jilju.getSumOfDistance(jiljuMap.values.toList()[_touchedIndex]).toStringAsFixed(1)} km',
                         style: const TextStyle(fontSize: 24),
                       ),
                     ),
@@ -107,7 +108,7 @@ class HomePageState extends State<HomePage> {
                         _touchedIndex == -1
                             ? ''
                             : durationToString(Jilju.getSumOfTotalTime(
-                                jiljuLists[_touchedIndex])),
+                                jiljuMap.values.toList()[_touchedIndex])),
                         style: const TextStyle(fontSize: 24),
                       ),
                     ),

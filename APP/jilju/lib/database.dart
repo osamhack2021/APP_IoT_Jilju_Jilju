@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:hive_flutter/hive_flutter.dart';
@@ -30,14 +31,15 @@ class DatabaseManager {
     }).toList();
   }
 
-  static Future<List<List<Jilju>>> getJiljuLists(
+  static Future<Map<DateTime, List<Jilju>>> getJiljuMap(
       DateTime startDate, int count) async {
-    List<List<Jilju>> jiljuList = [];
+    Map<DateTime, List<Jilju>> jiljuMap = SplayTreeMap();
     for (int idx = 0; idx < count; idx++) {
-      jiljuList.add(await _getJiljuList(startDate.add(Duration(days: idx)),
-          startDate.add(Duration(days: idx + 1))));
+      DateTime dateTime = startDate.add(Duration(days: idx));
+      jiljuMap[dateTime] =
+          await _getJiljuList(dateTime, dateTime.add(const Duration(days: 1)));
     }
-    return jiljuList;
+    return jiljuMap;
   }
 
   static Future<int> getNextJiljuId() async {

@@ -9,10 +9,10 @@ import 'package:jilju/util.dart';
 import 'model/jilju.dart';
 
 class JiljuBarChart extends StatefulWidget {
-  final List<List<Jilju>> _jiljuLists;
+  final Map<DateTime, List<Jilju>> _jiljuMap;
   final double maxY;
-  JiljuBarChart(this._jiljuLists, {Key? key})
-      : maxY = getMaxY(_jiljuLists),
+  JiljuBarChart(this._jiljuMap, {Key? key})
+      : maxY = getMaxY(_jiljuMap),
         super(key: key);
 
   @override
@@ -36,16 +36,17 @@ class _JiljuBarChartState extends State<JiljuBarChart> {
     );
   }
 
-  List<BarChartGroupData> get barGroups => widget._jiljuLists
+  List<BarChartGroupData> get barGroups => widget._jiljuMap.keys
+      .toList()
       .asMap()
       .map(
-        (idx, jiljuList) => MapEntry(
+        (idx, dateTime) => MapEntry(
           idx,
           BarChartGroupData(
             x: idx,
             barRods: [
               BarChartRodData(
-                y: Jilju.getSumOfDistance(jiljuList),
+                y: Jilju.getSumOfDistance(widget._jiljuMap[dateTime]!),
                 colors: [Colors.lightBlueAccent, Colors.greenAccent],
                 width: 20,
               )
@@ -61,8 +62,7 @@ class _JiljuBarChartState extends State<JiljuBarChart> {
         bottomTitles: SideTitles(
           showTitles: true,
           getTitles: (value) {
-            DateTime dateTime = today().subtract(Duration(
-                days: (widget._jiljuLists.length - 1) - value.toInt()));
+            DateTime dateTime = widget._jiljuMap.keys.toList()[value.toInt()];
             return DateFormat('MM/dd').format(dateTime);
           },
           getTextStyles: (context, value) => const TextStyle(
@@ -100,10 +100,10 @@ class _JiljuBarChartState extends State<JiljuBarChart> {
 }
 
 class JiljuLineChart extends StatefulWidget {
-  final List<List<Jilju>> _jiljuLists;
+  final Map<DateTime, List<Jilju>> _jiljuMap;
   final double maxY;
-  JiljuLineChart(this._jiljuLists, {Key? key})
-      : maxY = getMaxY(_jiljuLists),
+  JiljuLineChart(this._jiljuMap, {Key? key})
+      : maxY = getMaxY(_jiljuMap),
         super(key: key);
 
   @override
@@ -128,12 +128,14 @@ class _JiljuLineChartState extends State<JiljuLineChart> {
 
   List<LineChartBarData> get lineBarsData => [
         LineChartBarData(
-          spots: widget._jiljuLists
+          spots: widget._jiljuMap.keys
+              .toList()
               .asMap()
               .map(
-                (idx, jiljuList) => MapEntry(
+                (idx, dateTime) => MapEntry(
                   idx,
-                  FlSpot(idx.toDouble(), Jilju.getSumOfDistance(jiljuList)),
+                  FlSpot(idx.toDouble(),
+                      Jilju.getSumOfDistance(widget._jiljuMap[dateTime]!)),
                 ),
               )
               .values
@@ -149,15 +151,15 @@ class _JiljuLineChartState extends State<JiljuLineChart> {
         bottomTitles: SideTitles(
           showTitles: true,
           getTitles: (value) {
-            DateTime dateTime = today().subtract(Duration(
-                days: (widget._jiljuLists.length - 1) - value.toInt()));
+            DateTime dateTime = today().subtract(
+                Duration(days: (widget._jiljuMap.length - 1) - value.toInt()));
             return DateFormat('MM/dd').format(dateTime);
           },
           getTextStyles: (context, value) => const TextStyle(
             color: Color(0xff7589a2),
             fontSize: 10,
           ),
-          interval: (widget._jiljuLists.length ~/ 5 + 1).toDouble(),
+          interval: (widget._jiljuMap.length ~/ 5 + 1).toDouble(),
         ),
         leftTitles: SideTitles(
           showTitles: true,
@@ -173,9 +175,9 @@ class _JiljuLineChartState extends State<JiljuLineChart> {
       );
 }
 
-double getMaxY(List<List<Jilju>> jiljuLists) {
+double getMaxY(Map<DateTime, List<Jilju>> jiljuMap) {
   return max(
-      jiljuLists
+      jiljuMap.values
               .map((jiljuList) => Jilju.getSumOfDistance(jiljuList))
               .reduce(max) +
           1,

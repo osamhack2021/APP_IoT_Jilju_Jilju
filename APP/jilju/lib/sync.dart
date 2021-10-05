@@ -226,18 +226,17 @@ class _SyncPageState extends State<SyncPage> {
       itemBuilder: (context, index) {
         return InkWell(
           child: SizedBox(
-            height: 40,
+            height: 50,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.only(left: 20),
               child: Row(
                 children: <Widget>[
                   const Icon(Icons.devices, size: 20),
                   Expanded(
-                    child: Center(
-                      child: Text(
-                        _devices[index].id.toString(),
-                        style: const TextStyle(fontSize: 20),
-                      ),
+                    child: Text(
+                      _devices[index].id.toString(),
+                      style: const TextStyle(fontSize: 20),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ],
@@ -253,7 +252,10 @@ class _SyncPageState extends State<SyncPage> {
           },
         );
       },
-      separatorBuilder: (context, index) => const Divider(),
+      separatorBuilder: (context, index) => const Divider(
+        height: 1,
+        thickness: 1,
+      ),
       itemCount: _devices.length,
     );
   }
