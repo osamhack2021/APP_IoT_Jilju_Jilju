@@ -49,10 +49,6 @@ class Jilju extends HiveObject {
     points.add(jiljuPoint);
   }
 
-  DateTime startTimeToDateTime() {
-    return DateTime.fromMillisecondsSinceEpoch(startTime * 1000);
-  }
-
   @override
   String toString() {
     return '$startTime,$endTime,$distance,$points';

@@ -234,8 +234,10 @@ class _SyncPageState extends State<SyncPage> {
                   const Icon(Icons.devices, size: 20),
                   Expanded(
                     child: Center(
-                      child: Text(_devices[index].id.toString(),
-                          style: const TextStyle(fontSize: 20)),
+                      child: Text(
+                        _devices[index].id.toString(),
+                        style: const TextStyle(fontSize: 20),
+                      ),
                     ),
                   ),
                 ],

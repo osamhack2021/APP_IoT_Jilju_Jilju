@@ -14,7 +14,19 @@ String dateToString(DateTime date) {
   return DateFormat('yyyy/MM/dd').format(date);
 }
 
+String dateTimeToString(DateTime date) {
+  return DateFormat('yyyy/MM/dd  HH:mm').format(date);
+}
+
+String timeToString(DateTime time) {
+  return DateFormat('HH:mm').format(time);
+}
+
 String durationToString(Duration duration) {
   String str = duration.toString();
   return str.substring(0, str.indexOf('.'));
+}
+
+DateTime secondsToDateTime(int secondsSinceEpoch) {
+  return DateTime.fromMillisecondsSinceEpoch(secondsSinceEpoch * 1000);
 }

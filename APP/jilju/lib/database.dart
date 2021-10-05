@@ -24,7 +24,7 @@ class DatabaseManager {
       DateTime fromDateTime, DateTime toDateTime) async {
     var box = await _jiljuBox;
     return box.values.where((jilju) {
-      DateTime jiljuDateTime = jilju.startTimeToDateTime();
+      DateTime jiljuDateTime = secondsToDateTime(jilju.startTime);
       return fromDateTime.compareTo(jiljuDateTime) <= 0 &&
           jiljuDateTime.compareTo(toDateTime) < 0;
     }).toList();
