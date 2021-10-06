@@ -30,7 +30,7 @@ class Jilju extends HiveObject {
     for (int i = 1; i < tokens.length - 1; i++) {
       List<int> jiljuPointDatas = tokens[i].split(',').map(int.parse).toList();
       _addJiljuPoint(JiljuPoint(
-          jiljuPointDatas[0], jiljuPointDatas[1], jiljuPointDatas[2]));
+          jiljuPointDatas[0], jiljuPointDatas[2], jiljuPointDatas[1]));
     }
   }
 

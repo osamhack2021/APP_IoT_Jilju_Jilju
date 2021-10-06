@@ -1,3 +1,6 @@
+import 'dart:math';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:jilju/util.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -50,94 +53,111 @@ class _DetailPageState extends State<DetailPage> {
       builder: (context) {
         return AlertDialog(
           title: const Text('질주 상세'),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          content: Wrap(
             children: <Widget>[
-              Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  const Expanded(
-                    flex: 2,
-                    child: Text(
-                      '일시',
-                      style: TextStyle(fontSize: 16),
-                      textAlign: TextAlign.center,
+                  AspectRatio(
+                    aspectRatio: 1,
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        return CustomPaint(
+                          painter: _JiljuPainter(jilju),
+                          size:
+                              Size(constraints.maxWidth, constraints.maxHeight),
+                        );
+                      },
                     ),
                   ),
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      '${dateToString(secondsToDateTime(jilju.startTime))}\n'
-                      '${timeToString(secondsToDateTime(jilju.startTime))}'
-                      ' ~ ${timeToString(secondsToDateTime(jilju.endTime))}',
-                      style: const TextStyle(fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: <Widget>[
+                      const Expanded(
+                        flex: 2,
+                        child: Text(
+                          '일시',
+                          style: TextStyle(fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          '${dateToString(secondsToDateTime(jilju.startTime))}\n'
+                          '${timeToString(secondsToDateTime(jilju.startTime))}'
+                          ' ~ ${timeToString(secondsToDateTime(jilju.endTime))}',
+                          style: const TextStyle(fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: const <Widget>[
-                  Expanded(
-                    child: Text(
-                      '질주 거리',
-                      style: TextStyle(fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: const <Widget>[
+                      Expanded(
+                        child: Text(
+                          '질주 거리',
+                          style: TextStyle(fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          '질주 시간',
+                          style: TextStyle(fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
                   ),
-                  Expanded(
-                    child: Text(
-                      '질주 시간',
-                      style: TextStyle(fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          '${jilju.distance.toStringAsFixed(1)} km',
+                          style: const TextStyle(fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          durationToString(jilju.totalTime()),
+                          style: const TextStyle(fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      '${jilju.distance.toStringAsFixed(1)} km',
-                      style: const TextStyle(fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: const <Widget>[
+                      Expanded(
+                        child: Text(
+                          '평균 속력',
+                          style: TextStyle(fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Expanded(
+                        child: SizedBox.shrink(),
+                      ),
+                    ],
                   ),
-                  Expanded(
-                    child: Text(
-                      durationToString(jilju.totalTime()),
-                      style: const TextStyle(fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: const <Widget>[
-                  Expanded(
-                    child: Text(
-                      '평균 속력',
-                      style: TextStyle(fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Expanded(
-                    child: SizedBox.shrink(),
-                  ),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      '${jilju.averageSpeed().toStringAsFixed(1)} km/h',
-                      style: const TextStyle(fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const Expanded(
-                    child: SizedBox.shrink(),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          '${jilju.averageSpeed().toStringAsFixed(1)} km/h',
+                          style: const TextStyle(fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const Expanded(
+                        child: SizedBox.shrink(),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -282,5 +302,36 @@ class _DetailPageState extends State<DetailPage> {
         ),
       ],
     );
+  }
+}
+
+class _JiljuPainter extends CustomPainter {
+  final Jilju _jilju;
+
+  _JiljuPainter(this._jilju);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    int maxX = _jilju.points.map((jiljuPoint) => jiljuPoint.x).reduce(max);
+    int maxY = _jilju.points.map((jiljuPoint) => jiljuPoint.y).reduce(max);
+    int minX = _jilju.points.map((jiljuPoint) => jiljuPoint.x).reduce(min);
+    int minY = _jilju.points.map((jiljuPoint) => jiljuPoint.y).reduce(min);
+    int maxLength = max(maxX - minX, maxY - minY) + 1;
+    List<Offset> points = _jilju.points
+        .map((jiljuPoint) => Offset(
+            ((jiljuPoint.x - minX) * size.width ~/ maxLength).toDouble(),
+            (size.height - 1) -
+                ((jiljuPoint.y - minY) * size.height ~/ maxLength)))
+        .toList();
+    Paint paint = Paint()
+      ..color = Colors.black
+      ..strokeWidth = 1
+      ..strokeCap = StrokeCap.round;
+    canvas.drawPoints(PointMode.polygon, points, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
   }
 }

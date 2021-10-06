@@ -66,10 +66,9 @@ class JiljuMainPageState extends State<JiljuMainPage> {
             },
             currentIndex: _index,
             items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(label: 'Home', icon: Icon(Icons.home)),
-              BottomNavigationBarItem(
-                  label: 'Detail', icon: Icon(Icons.event_note)),
-              BottomNavigationBarItem(label: 'Sync', icon: Icon(Icons.sync)),
+              BottomNavigationBarItem(label: '', icon: Icon(Icons.home)),
+              BottomNavigationBarItem(label: '', icon: Icon(Icons.event_note)),
+              BottomNavigationBarItem(label: '', icon: Icon(Icons.sync)),
             ],
             showSelectedLabels: false,
             showUnselectedLabels: false,
