@@ -38,6 +38,10 @@ class Jilju extends HiveObject {
     return Duration(seconds: endTime - startTime);
   }
 
+  double averageSpeed() {
+    return distance / (endTime - startTime) * 3600;
+  }
+
   /// Add a new JiljuPoint. The time of the new JiljuPoint must be greater
   /// than the time of the previous JiljuPoint.
   void _addJiljuPoint(JiljuPoint jiljuPoint) {

@@ -178,14 +178,14 @@ class _SyncPageState extends State<SyncPage> {
             ],
           ),
           actions: <Widget>[
-            ElevatedButton(
+            TextButton(
               child: const Text('CANCEL'),
               onPressed: () {
                 _passwordController.clear();
                 Navigator.pop(context);
               },
             ),
-            ElevatedButton(
+            TextButton(
               child: const Text('OK'),
               onPressed: () {
                 String passwordStr = _passwordController.text;

@@ -44,6 +44,118 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
+  void _showJiljuDetailDialog(Jilju jilju) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('질주 상세'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  const Expanded(
+                    flex: 2,
+                    child: Text(
+                      '일시',
+                      style: TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      '${dateToString(secondsToDateTime(jilju.startTime))}\n'
+                      '${timeToString(secondsToDateTime(jilju.startTime))}'
+                      ' ~ ${timeToString(secondsToDateTime(jilju.endTime))}',
+                      style: const TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: const <Widget>[
+                  Expanded(
+                    child: Text(
+                      '질주 거리',
+                      style: TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      '질주 시간',
+                      style: TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      '${jilju.distance.toStringAsFixed(1)} km',
+                      style: const TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      durationToString(jilju.totalTime()),
+                      style: const TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: const <Widget>[
+                  Expanded(
+                    child: Text(
+                      '평균 속력',
+                      style: TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Expanded(
+                    child: SizedBox.shrink(),
+                  ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      '${jilju.averageSpeed().toStringAsFixed(1)} km/h',
+                      style: const TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const Expanded(
+                    child: SizedBox.shrink(),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   ListView _buildListViewOfJiljus(List<Jilju> jiljuList) {
     return ListView.separated(
       itemBuilder: (context, index) {
@@ -82,7 +194,7 @@ class _DetailPageState extends State<DetailPage> {
               ),
             ),
           ),
-          onTap: () {},
+          onTap: () => _showJiljuDetailDialog(jiljuList[index]),
         );
       },
       separatorBuilder: (context, index) => const Divider(

@@ -19,7 +19,7 @@ class MessageManager {
           title: const Text('알림'),
           content: Text(messageString[messageId]),
           actions: <Widget>[
-            ElevatedButton(
+            TextButton(
               child: const Text('OK'),
               onPressed: () {
                 Navigator.pop(context);
