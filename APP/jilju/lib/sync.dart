@@ -152,21 +152,21 @@ class _SyncPageState extends State<SyncPage> {
   }
 
   Future<int?> _takePassword() async {
-    String? passwordStr = await _showPasswordInputDialog();
-    if (passwordStr == null) {
+    String? password = await _showPasswordInputDialog();
+    if (password == null) {
       return null;
-    } else if (passwordStr.length != 8) {
+    } else if (password.length != 8) {
       MessageManager.showMessageDialog(context, 4);
       return null;
     }
-    return int.parse(passwordStr);
+    return int.parse(password);
   }
 
   Future<String?> _showPasswordInputDialog() {
     return showDialog(
       context: context,
-      barrierDismissible: false,
       builder: (context) {
+        _passwordController.clear();
         return AlertDialog(
           title: const Text('비밀번호 입력'),
           content: TextField(
@@ -181,16 +181,13 @@ class _SyncPageState extends State<SyncPage> {
             TextButton(
               child: const Text('CANCEL'),
               onPressed: () {
-                _passwordController.clear();
                 Navigator.pop(context);
               },
             ),
             TextButton(
               child: const Text('OK'),
               onPressed: () {
-                String passwordStr = _passwordController.text;
-                _passwordController.clear();
-                Navigator.pop(context, passwordStr);
+                Navigator.pop(context, _passwordController.text);
               },
             ),
           ],
@@ -232,11 +229,11 @@ class _SyncPageState extends State<SyncPage> {
               child: Row(
                 children: <Widget>[
                   const Icon(Icons.devices, size: 20),
+                  const SizedBox(width: 20),
                   Expanded(
                     child: Text(
                       _devices[index].id.toString(),
                       style: const TextStyle(fontSize: 20),
-                      textAlign: TextAlign.center,
                     ),
                   ),
                 ],

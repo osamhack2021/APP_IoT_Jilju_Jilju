@@ -8,12 +8,13 @@ class MessageManager {
     'characteristic not found',
     '비밀번호는 8자리 숫자입니다.',
     '검색된 기기가 없습니다!',
+    '태그 이름이 중복되었습니다.',
+    '등록된 태그가 없습니다!',
   ];
 
   static void showMessageDialog(BuildContext context, int messageId) {
     showDialog(
       context: context,
-      barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
           title: const Text('알림'),

@@ -3,20 +3,43 @@ import 'dart:math';
 
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'model/jilju_tag.dart';
 import 'util.dart';
 import 'model/jilju.dart';
 
 class DatabaseManager {
   static final Future<Box<Jilju>> _jiljuBox = Hive.openBox<Jilju>('jilju');
+  static final Future<Box<JiljuTag>> _jiljuTagBox =
+      Hive.openBox<JiljuTag>('jiljuTag');
 
-  static void putJilju(int id, Jilju jilju) async {
+  static Future<void> putJilju(int id, Jilju jilju) async {
     var box = await _jiljuBox;
-    box.put(id, jilju);
+    return box.put(id, jilju);
   }
 
   static Future<Jilju?> getJilju(int id) async {
     var box = await _jiljuBox;
     return box.get(id);
+  }
+
+  static Future<void> putJiljuTag(JiljuTag jiljuTag) async {
+    var box = await _jiljuTagBox;
+    return box.put(jiljuTag.name, jiljuTag);
+  }
+
+  static Future<void> deleteJiljuTag(JiljuTag jiljuTag) async {
+    var box = await _jiljuTagBox;
+    return box.delete(jiljuTag.name);
+  }
+
+  static Future<bool> containsJiljuTag(String tagName) async {
+    var box = await _jiljuTagBox;
+    return box.containsKey(tagName);
+  }
+
+  static Future<List<JiljuTag>> getAllJiljuTags() async {
+    var box = await _jiljuTagBox;
+    return box.values.toList();
   }
 
   /// Returns all Jiljus whose startTime is greater than or equal to

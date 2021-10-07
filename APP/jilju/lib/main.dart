@@ -3,14 +3,16 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'detail.dart';
 import 'home.dart';
-import 'sync.dart';
 import 'model/jilju.dart';
 import 'model/jilju_point.dart';
+import 'model/jilju_tag.dart';
+import 'sync.dart';
 
 void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(JiljuAdapter());
   Hive.registerAdapter(JiljuPointAdapter());
+  Hive.registerAdapter(JiljuTagAdapter());
   runApp(const JiljuApp());
 }
 
