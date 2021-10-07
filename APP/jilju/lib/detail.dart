@@ -328,6 +328,13 @@ class _JiljuPainter extends CustomPainter {
       ..strokeWidth = 1
       ..strokeCap = StrokeCap.round;
     canvas.drawPoints(PointMode.polygon, points, paint);
+    paint
+      ..color = Colors.greenAccent
+      ..strokeWidth = 10
+      ..strokeCap = StrokeCap.square;
+    canvas.drawPoints(PointMode.points, [points[0]], paint);
+    paint.color = Colors.redAccent;
+    canvas.drawPoints(PointMode.points, [points[points.length - 1]], paint);
   }
 
   @override
