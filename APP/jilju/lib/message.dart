@@ -6,25 +6,30 @@ class MessageManager {
     '기기에 연결할 수 없습니다.',
     'service not found',
     'characteristic not found',
-    '비밀번호는 8자리 숫자입니다.',
+    '8자리 숫자를 입력하십시오.',
     '검색된 기기가 없습니다!',
     '태그 이름이 중복되었습니다.',
     '등록된 태그가 없습니다!',
+    '태그 이름을 입력하십시오.',
+    '태그를 삭제하시겠습니까?',
   ];
 
-  static void showMessageDialog(BuildContext context, int messageId) {
-    showDialog(
+  static Future<void> showMessageDialog(
+      BuildContext context, int messageId) async {
+    return showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('알림'),
-          content: Text(messageString[messageId]),
+          titleTextStyle: const TextStyle(fontSize: 20),
+          content: Text(
+            messageString[messageId],
+            style: const TextStyle(fontSize: 16),
+          ),
           actions: <Widget>[
             TextButton(
               child: const Text('OK'),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: () => Navigator.pop(context),
             ),
           ],
         );

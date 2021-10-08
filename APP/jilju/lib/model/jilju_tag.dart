@@ -1,6 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
 
-import '../database.dart';
 import 'jilju.dart';
 
 part 'jilju_tag.g.dart';
@@ -32,9 +31,6 @@ class JiljuTag extends HiveObject {
     }
     jiljus.remove(jilju);
     save();
-    if (jiljus.isEmpty) {
-      DatabaseManager.deleteJiljuTag(this);
-    }
     return true;
   }
 }

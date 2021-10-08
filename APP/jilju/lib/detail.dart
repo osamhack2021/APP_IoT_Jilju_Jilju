@@ -52,8 +52,8 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  void _showJiljuDetailDialog(Jilju jilju) {
-    showDialog(
+  Future<void> _showJiljuDetailDialog(Jilju jilju) async {
+    return showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
@@ -76,6 +76,8 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                   ),
                   const SizedBox(height: 10),
+                  /*_buildJiljuTagSelector(),
+                  const SizedBox(height: 10),*/
                   Row(
                     children: <Widget>[
                       const Expanded(
@@ -171,9 +173,7 @@ class _DetailPageState extends State<DetailPage> {
           actions: <Widget>[
             TextButton(
               child: const Text('OK'),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: () => Navigator.pop(context),
             ),
           ],
         );
@@ -181,86 +181,107 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  Future<JiljuTag?> _showJiljuTagDialog(bool allowNewTag) async {
-    List<JiljuTag> allJiljuTags = await DatabaseManager.getAllJiljuTags();
+  Future<JiljuTag?> _showJiljuTagDialog() async {
     return showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('태그'),
-          content: AspectRatio(
-            aspectRatio: 0.6,
-            child: allJiljuTags.isEmpty
-                ? Center(
-                    child: Text(
-                    MessageManager.messageString[7],
-                    style: const TextStyle(fontSize: 16),
-                  ))
-                : ListView.separated(
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                        child: SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: Row(
-                            children: <Widget>[
-                              const Icon(Icons.tag, size: 16),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  allJiljuTags[index].name,
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.pop(context, allJiljuTags[index]);
-                        },
-                      );
-                    },
-                    separatorBuilder: (context, index) => const Divider(
-                      height: 1,
-                      thickness: 1,
-                    ),
-                    itemCount: allJiljuTags.length,
-                  ),
-          ),
-          actions: <Widget>[
-            if (allowNewTag)
-              TextButton(
-                child: const Text('NEW TAG'),
-                onPressed: () async {
-                  Navigator.pop(context, JiljuTag.emptyTag);
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('태그'),
+              content: FutureBuilder(
+                future: DatabaseManager.getAllJiljuTags(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<JiljuTag> allJiljuTags =
+                        snapshot.data as List<JiljuTag>;
+                    return AspectRatio(
+                      aspectRatio: 0.6,
+                      child: allJiljuTags.isEmpty
+                          ? Center(
+                              child: Text(
+                              MessageManager.messageString[7],
+                              style: const TextStyle(fontSize: 16),
+                            ))
+                          : _buildListViewOfJiljuTags(allJiljuTags, setState),
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
                 },
               ),
-            TextButton(
-              child: const Text('CANCEL'),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('NEW TAG'),
+                  onPressed: () async {
+                    String? tagName = await _showTagNameInputDialog();
+                    if (tagName == null) {
+                      return;
+                    }
+                    setState(() {
+                      JiljuTag jiljuTag = JiljuTag(tagName);
+                      DatabaseManager.putJiljuTag(jiljuTag);
+                    });
+                  },
+                ),
+                TextButton(
+                  child: const Text('CANCEL'),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            );
+          },
         );
       },
     );
   }
 
-  Future<JiljuTag?> _takeNewTag() async {
-    String? tagName = await _showTagNameInputDialog();
-    if (tagName == null || tagName.isEmpty) {
-      return null;
-    } else if (await DatabaseManager.containsJiljuTag(tagName)) {
-      MessageManager.showMessageDialog(context, 6);
-      return null;
-    }
-    JiljuTag jiljuTag = JiljuTag(tagName);
-    DatabaseManager.putJiljuTag(jiljuTag);
-    return jiljuTag;
+  ListView _buildListViewOfJiljuTags(
+      List<JiljuTag> jiljuTagList, void Function(void Function()) setState) {
+    return ListView.separated(
+      itemBuilder: (context, index) {
+        return InkWell(
+          child: SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: Row(
+              children: <Widget>[
+                const Icon(Icons.tag, size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    jiljuTagList[index].name,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, size: 20),
+                  onPressed: () async {
+                    bool? ret = await _showDeleteTagDialog();
+                    if (ret == null || !ret) {
+                      return;
+                    }
+                    setState(() {
+                      DatabaseManager.deleteJiljuTag(jiljuTagList[index]);
+                    });
+                  },
+                  splashRadius: 20,
+                ),
+              ],
+            ),
+          ),
+          onTap: () => Navigator.pop(context, jiljuTagList[index]),
+        );
+      },
+      separatorBuilder: (context, index) => const Divider(
+        height: 1,
+        thickness: 1,
+      ),
+      itemCount: jiljuTagList.length,
+    );
   }
 
-  Future<String?> _showTagNameInputDialog() {
+  Future<String?> _showTagNameInputDialog() async {
     return showDialog(
       context: context,
       builder: (context) {
@@ -273,15 +294,42 @@ class _DetailPageState extends State<DetailPage> {
           actions: <Widget>[
             TextButton(
               child: const Text('CANCEL'),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: () => Navigator.pop(context),
             ),
             TextButton(
               child: const Text('OK'),
-              onPressed: () {
-                Navigator.pop(context, _tagNameController.text);
+              onPressed: () async {
+                String tagName = _tagNameController.text;
+                if (tagName.isEmpty) {
+                  await MessageManager.showMessageDialog(context, 8);
+                } else if (await DatabaseManager.containsJiljuTag(tagName)) {
+                  await MessageManager.showMessageDialog(context, 6);
+                } else {
+                  Navigator.pop(context, tagName);
+                }
               },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<bool?> _showDeleteTagDialog() async {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('알림'),
+          content: Text(MessageManager.messageString[9]),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('YES'),
+              onPressed: () => Navigator.pop(context, true),
+            ),
+            TextButton(
+              child: const Text('NO'),
+              onPressed: () => Navigator.pop(context, false),
             ),
           ],
         );
@@ -340,89 +388,96 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
+  Widget _buildDateRangePicker() {
+    return InkWell(
+      child: Row(
+        children: <Widget>[
+          const Icon(Icons.event_note, size: 20),
+          Expanded(
+            child: Text(
+              '${dateToString(_startDate)} ~ ${dateToString(_endDate)}',
+              style: const TextStyle(fontSize: 20),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+      onTap: () async {
+        PickerDateRange? pickerDateRange = await _showDatePickerDialog();
+        if (pickerDateRange == null) {
+          return;
+        }
+        setState(() {
+          _startDate = pickerDateRange.startDate!;
+          _endDate = pickerDateRange.endDate ?? _startDate;
+        });
+      },
+    );
+  }
+
+  Widget _buildJiljuTagSelector() {
+    return Row(
       children: <Widget>[
-        InkWell(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
+        const Icon(Icons.tag, size: 20),
+        const SizedBox(width: 5),
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
             child: Row(
               children: <Widget>[
-                const Icon(Icons.event_note, size: 20),
-                Expanded(
-                  child: Text(
-                    '${dateToString(_startDate)} ~ ${dateToString(_endDate)}',
-                    style: const TextStyle(fontSize: 20),
-                    textAlign: TextAlign.center,
-                  ),
+                ..._jiljuTags
+                    .map((jiljuTag) => Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: OutlinedButton(
+                            child: Text(
+                              jiljuTag.name,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _jiljuTags.remove(jiljuTag);
+                              });
+                            },
+                          ),
+                        ))
+                    .toList(),
+                IconButton(
+                  icon: const Icon(Icons.add, size: 20),
+                  onPressed: () async {
+                    JiljuTag? jiljuTag = await _showJiljuTagDialog();
+                    if (jiljuTag == null) {
+                      return;
+                    }
+                    setState(() {
+                      _jiljuTags.remove(jiljuTag);
+                      _jiljuTags.add(jiljuTag);
+                    });
+                  },
+                  splashRadius: 20,
                 ),
               ],
             ),
           ),
-          onTap: () async {
-            PickerDateRange? pickerDateRange = await _showDatePickerDialog();
-            if (pickerDateRange == null) {
-              return;
-            }
-            setState(() {
-              _startDate = pickerDateRange.startDate!;
-              _endDate = pickerDateRange.endDate ?? _startDate;
-            });
-          },
         ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        const SizedBox(height: 20),
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-          child: Row(
-            children: <Widget>[
-              const Icon(Icons.tag, size: 20),
-              const SizedBox(width: 5),
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: <Widget>[
-                      ..._jiljuTags
-                          .map((jiljuTag) => Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 5),
-                                child: OutlinedButton(
-                                  child: Text(
-                                    jiljuTag.name,
-                                    style: const TextStyle(fontSize: 16),
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _jiljuTags.remove(jiljuTag);
-                                    });
-                                  },
-                                ),
-                              ))
-                          .toList(),
-                      IconButton(
-                        icon: const Icon(Icons.add, size: 20),
-                        onPressed: () async {
-                          JiljuTag? jiljuTag = await _showJiljuTagDialog(false);
-                          if (jiljuTag == JiljuTag.emptyTag) {
-                            jiljuTag = await _takeNewTag();
-                          }
-                          if (jiljuTag == null) {
-                            return;
-                          }
-                          setState(() {
-                            _jiljuTags.remove(jiljuTag);
-                            _jiljuTags.add(jiljuTag!);
-                          });
-                        },
-                        splashRadius: 20,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: _buildDateRangePicker(),
         ),
+        const SizedBox(height: 20),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: _buildJiljuTagSelector(),
+        ),
+        const SizedBox(height: 20),
         Expanded(
           child: FutureBuilder(
             future: DatabaseManager.getJiljuMap(

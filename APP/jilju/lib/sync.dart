@@ -102,14 +102,14 @@ class _SyncPageState extends State<SyncPage> {
       await device.connect();
     } on PlatformException catch (e) {
       if (e.code != 'already_connected') {
-        MessageManager.showMessageDialog(context, 1);
+        await MessageManager.showMessageDialog(context, 1);
         return;
       }
     }
     List<BluetoothService> services = await device.discoverServices();
     BluetoothService? ftpService = _findService(services, _ftpServiceGuid);
     if (ftpService == null) {
-      MessageManager.showMessageDialog(context, 2);
+      await MessageManager.showMessageDialog(context, 2);
       return;
     }
     BluetoothCharacteristic? fileIdChar =
@@ -117,10 +117,10 @@ class _SyncPageState extends State<SyncPage> {
     BluetoothCharacteristic? fileDataChar =
         _findCharacteristic(ftpService, _fileDataCharGuid);
     if (fileIdChar == null || fileDataChar == null) {
-      MessageManager.showMessageDialog(context, 3);
+      await MessageManager.showMessageDialog(context, 3);
       return;
     }
-    int? password = await _takePassword();
+    int? password = await _showPasswordInputDialog();
     if (password == null) {
       return;
     }
@@ -135,34 +135,23 @@ class _SyncPageState extends State<SyncPage> {
     }
     await device.disconnect();
     _setProgressVisible(false);
-    MessageManager.showMessageDialog(context, 0);
+    await MessageManager.showMessageDialog(context, 0);
   }
 
   Future<void> _connectToVirtualDevice(_VirtualDevice device) async {
-    int? password = await _takePassword();
+    int? password = await _showPasswordInputDialog();
     if (password == null) {
       return;
     }
     _setProgressVisible(true);
     DatabaseManager.loadSampleDatas(password);
-    Future.delayed(const Duration(seconds: 10), () {
+    Future.delayed(const Duration(seconds: 10), () async {
       _setProgressVisible(false);
-      MessageManager.showMessageDialog(context, 0);
+      await MessageManager.showMessageDialog(context, 0);
     });
   }
 
-  Future<int?> _takePassword() async {
-    String? password = await _showPasswordInputDialog();
-    if (password == null) {
-      return null;
-    } else if (password.length != 8) {
-      MessageManager.showMessageDialog(context, 4);
-      return null;
-    }
-    return int.parse(password);
-  }
-
-  Future<String?> _showPasswordInputDialog() {
+  Future<int?> _showPasswordInputDialog() async {
     return showDialog(
       context: context,
       builder: (context) {
@@ -180,14 +169,16 @@ class _SyncPageState extends State<SyncPage> {
           actions: <Widget>[
             TextButton(
               child: const Text('CANCEL'),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: () => Navigator.pop(context),
             ),
             TextButton(
               child: const Text('OK'),
-              onPressed: () {
-                Navigator.pop(context, _passwordController.text);
+              onPressed: () async {
+                if (_passwordController.text.length == 8) {
+                  Navigator.pop(context, int.parse(_passwordController.text));
+                } else {
+                  await MessageManager.showMessageDialog(context, 4);
+                }
               },
             ),
           ],
