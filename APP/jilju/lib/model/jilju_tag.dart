@@ -6,8 +6,6 @@ part 'jilju_tag.g.dart';
 
 @HiveType(typeId: 2)
 class JiljuTag extends HiveObject {
-  static final JiljuTag emptyTag = JiljuTag('__EMPTY__');
-
   @HiveField(0)
   String name;
 

@@ -1,6 +1,8 @@
 import 'package:hive_flutter/hive_flutter.dart';
 
+import '../database.dart';
 import 'jilju_point.dart';
+import 'jilju_tag.dart';
 
 part 'jilju.g.dart';
 
@@ -40,6 +42,13 @@ class Jilju extends HiveObject {
 
   double averageSpeed() {
     return distance / (endTime - startTime) * 3600;
+  }
+
+  Future<List<JiljuTag>> jiljuTags() async {
+    List<JiljuTag> jiljuTags = await DatabaseManager.getAllJiljuTags();
+    jiljuTags =
+        jiljuTags.where((jiljuTag) => jiljuTag.jiljus.contains(this)).toList();
+    return jiljuTags;
   }
 
   /// Add a new JiljuPoint. The time of the new JiljuPoint must be greater

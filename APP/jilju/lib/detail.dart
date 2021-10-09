@@ -53,6 +53,7 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   Future<void> _showJiljuDetailDialog(Jilju jilju) async {
+    List<JiljuTag> jiljuTags = await jilju.jiljuTags();
     return showDialog(
       context: context,
       builder: (context) {
@@ -76,8 +77,11 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  /*_buildJiljuTagSelector(),
-                  const SizedBox(height: 10),*/
+                  StatefulBuilder(
+                    builder: (context, setState) =>
+                        _buildJiljuTagSelector(jilju, jiljuTags, setState),
+                  ),
+                  const SizedBox(height: 10),
                   Row(
                     children: <Widget>[
                       const Expanded(
@@ -415,7 +419,8 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  Widget _buildJiljuTagSelector() {
+  Widget _buildJiljuTagSelector(Jilju? jilju, List<JiljuTag> jiljuTags,
+      void Function(void Function()) setState) {
     return Row(
       children: <Widget>[
         const Icon(Icons.tag, size: 20),
@@ -425,7 +430,7 @@ class _DetailPageState extends State<DetailPage> {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: <Widget>[
-                ..._jiljuTags
+                ...jiljuTags
                     .map((jiljuTag) => Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 5),
                           child: OutlinedButton(
@@ -435,8 +440,11 @@ class _DetailPageState extends State<DetailPage> {
                             ),
                             onPressed: () {
                               setState(() {
-                                _jiljuTags.remove(jiljuTag);
+                                jiljuTags.remove(jiljuTag);
                               });
+                              if (jilju != null) {
+                                jiljuTag.removeJilju(jilju);
+                              }
                             },
                           ),
                         ))
@@ -449,9 +457,12 @@ class _DetailPageState extends State<DetailPage> {
                       return;
                     }
                     setState(() {
-                      _jiljuTags.remove(jiljuTag);
-                      _jiljuTags.add(jiljuTag);
+                      jiljuTags.remove(jiljuTag);
+                      jiljuTags.add(jiljuTag);
                     });
+                    if (jilju != null) {
+                      jiljuTag.addJilju(jilju);
+                    }
                   },
                   splashRadius: 20,
                 ),
@@ -475,7 +486,7 @@ class _DetailPageState extends State<DetailPage> {
         const SizedBox(height: 20),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: _buildJiljuTagSelector(),
+          child: _buildJiljuTagSelector(null, _jiljuTags, setState),
         ),
         const SizedBox(height: 20),
         Expanded(
@@ -486,15 +497,14 @@ class _DetailPageState extends State<DetailPage> {
               if (snapshot.hasData) {
                 Map<DateTime, List<Jilju>> jiljuMap =
                     snapshot.data as Map<DateTime, List<Jilju>>;
-                for (JiljuTag jiljuTag in _jiljuTags) {
-                  for (List<Jilju> jiljuList in jiljuMap.values) {
-                    for (Jilju jilju in jiljuList) {
-                      if (!jiljuTag.jiljus.contains(jilju)) {
-                        jiljuList.remove(jilju);
-                      }
-                    }
+                jiljuMap.updateAll((dateTime, jiljuList) {
+                  for (JiljuTag jiljuTag in _jiljuTags) {
+                    jiljuList = jiljuList
+                        .where((jilju) => jiljuTag.jiljus.contains(jilju))
+                        .toList();
                   }
-                }
+                  return jiljuList;
+                });
                 List<Jilju> totalJiljuList =
                     jiljuMap.values.reduce((a, b) => [...a, ...b]);
                 return SingleChildScrollView(
