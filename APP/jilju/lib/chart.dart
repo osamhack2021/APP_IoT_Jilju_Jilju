@@ -132,6 +132,7 @@ class _JiljuLineChartState extends State<JiljuLineChart> {
               .toList(),
           colors: [Colors.lightBlueAccent, Colors.greenAccent],
           isCurved: true,
+          preventCurveOverShooting: true,
           dotData: FlDotData(show: false),
         ),
       ];

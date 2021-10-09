@@ -85,7 +85,9 @@ class DatabaseManager {
               .millisecondsSinceEpoch;
           startTime ~/= 1000;
           String fileData = startTime.toString() + '\n' + sampleDatas[i - 1];
-          DatabaseManager.putJilju(fileId++, Jilju.fromFileData(fileData));
+          DatabaseManager.putJilju(
+              fileId, Jilju.fromFileData(fileId, fileData));
+          fileId++;
         }
       }
     }

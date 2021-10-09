@@ -12,23 +12,20 @@ class JiljuTag extends HiveObject {
   @HiveField(1)
   List<Jilju> jiljus;
 
-  JiljuTag(this.name) : jiljus = [];
+  JiljuTag(this.name, {this.jiljus = const []}) {
+    jiljus = jiljus.toList();
+  }
 
-  bool addJilju(Jilju jilju) {
+  void addJilju(Jilju jilju) {
     if (jiljus.contains(jilju)) {
-      return false;
+      return;
     }
     jiljus.add(jilju);
     save();
-    return true;
   }
 
-  bool removeJilju(Jilju jilju) {
-    if (!jiljus.contains(jilju)) {
-      return false;
-    }
+  void removeJilju(Jilju jilju) {
     jiljus.remove(jilju);
     save();
-    return true;
   }
 }

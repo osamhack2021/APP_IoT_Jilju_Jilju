@@ -19,26 +19,17 @@ class JiljuPoint extends HiveObject {
   /// Convert the x-coordinate to latitude and return it. Since the
   /// calculation is based on 37 degrees north latitude, errors may occur
   /// depending on the starting position of the Jilju.
-  double _latitude() {
-    return 37 + (y / 100000);
-  }
+  double get _latitude => 37 + (y / 100000);
 
   /// Convert the y-coordinate to longitude and return it. Since the
   /// calculation is based on the 127 degree east longitude, errors may occur
   /// depending on the starting position of the Jilju.
-  double _longitude() {
-    return 127 + (x / 100000);
-  }
+  double get _longitude => 127 + (x / 100000);
 
   /// Calculates the distance from other JiljuPoint and returns it in km.
   double calculateDistance(JiljuPoint other) {
     return Geolocator.distanceBetween(
-            _latitude(), _longitude(), other._latitude(), other._longitude()) /
+            _latitude, _longitude, other._latitude, other._longitude) /
         1000;
-  }
-
-  @override
-  String toString() {
-    return '$time,$x,$y';
   }
 }

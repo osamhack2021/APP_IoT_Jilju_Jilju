@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:jilju/util.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -134,7 +135,7 @@ class _DetailPageState extends State<DetailPage> {
                       ),
                       Expanded(
                         child: Text(
-                          durationToString(jilju.totalTime()),
+                          durationToString(jilju.totalTime),
                           style: const TextStyle(fontSize: 16),
                           textAlign: TextAlign.center,
                         ),
@@ -151,23 +152,19 @@ class _DetailPageState extends State<DetailPage> {
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      Expanded(
-                        child: SizedBox.shrink(),
-                      ),
+                      Expanded(child: SizedBox.shrink()),
                     ],
                   ),
                   Row(
                     children: <Widget>[
                       Expanded(
                         child: Text(
-                          '${jilju.averageSpeed().toStringAsFixed(1)} km/h',
+                          '${jilju.averageSpeed.toStringAsFixed(1)} km/h',
                           style: const TextStyle(fontSize: 16),
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      const Expanded(
-                        child: SizedBox.shrink(),
-                      ),
+                      const Expanded(child: SizedBox.shrink()),
                     ],
                   ),
                 ],
@@ -240,51 +237,6 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  ListView _buildListViewOfJiljuTags(
-      List<JiljuTag> jiljuTagList, void Function(void Function()) setState) {
-    return ListView.separated(
-      itemBuilder: (context, index) {
-        return InkWell(
-          child: SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: Row(
-              children: <Widget>[
-                const Icon(Icons.tag, size: 16),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    jiljuTagList[index].name,
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, size: 20),
-                  onPressed: () async {
-                    bool? ret = await _showDeleteTagDialog();
-                    if (ret == null || !ret) {
-                      return;
-                    }
-                    setState(() {
-                      DatabaseManager.deleteJiljuTag(jiljuTagList[index]);
-                    });
-                  },
-                  splashRadius: 20,
-                ),
-              ],
-            ),
-          ),
-          onTap: () => Navigator.pop(context, jiljuTagList[index]),
-        );
-      },
-      separatorBuilder: (context, index) => const Divider(
-        height: 1,
-        thickness: 1,
-      ),
-      itemCount: jiljuTagList.length,
-    );
-  }
-
   Future<String?> _showTagNameInputDialog() async {
     return showDialog(
       context: context,
@@ -294,6 +246,10 @@ class _DetailPageState extends State<DetailPage> {
           title: const Text('새로운 태그'),
           content: TextField(
             controller: _tagNameController,
+            keyboardType: TextInputType.text,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.allow(RegExp(r'[\u0000-\u007F]')),
+            ],
           ),
           actions: <Widget>[
             TextButton(
@@ -341,70 +297,22 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  ListView _buildListViewOfJiljus(List<Jilju> jiljuList) {
-    return ListView.separated(
-      itemBuilder: (context, index) {
-        return InkWell(
-          child: SizedBox(
-            height: 60,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: <Widget>[
-                  const Icon(Icons.directions_run, size: 20),
-                  Expanded(
-                    flex: 2,
-                    child: Center(
-                      child: Text(
-                        '${dateToString(secondsToDateTime(jiljuList[index].startTime))}\n'
-                        '${timeToString(secondsToDateTime(jiljuList[index].startTime))}'
-                        ' ~ ${timeToString(secondsToDateTime(jiljuList[index].endTime))}',
-                        style: const TextStyle(fontSize: 16),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Center(
-                      child: Text(
-                        '${jiljuList[index].distance.toStringAsFixed(1)} km\n'
-                        '${durationToString(jiljuList[index].totalTime())}',
-                        style: const TextStyle(fontSize: 16),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          onTap: () => _showJiljuDetailDialog(jiljuList[index]),
-        );
-      },
-      separatorBuilder: (context, index) => const Divider(
-        height: 1,
-        thickness: 1,
-      ),
-      itemCount: jiljuList.length,
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-    );
-  }
-
   Widget _buildDateRangePicker() {
     return InkWell(
-      child: Row(
-        children: <Widget>[
-          const Icon(Icons.event_note, size: 20),
-          Expanded(
-            child: Text(
-              '${dateToString(_startDate)} ~ ${dateToString(_endDate)}',
-              style: const TextStyle(fontSize: 20),
-              textAlign: TextAlign.center,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: <Widget>[
+            const Icon(Icons.event_note, size: 20),
+            Expanded(
+              child: Text(
+                '${dateToString(_startDate)} ~ ${dateToString(_endDate)}',
+                style: const TextStyle(fontSize: 20),
+                textAlign: TextAlign.center,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       onTap: () async {
         PickerDateRange? pickerDateRange = await _showDatePickerDialog();
@@ -474,16 +382,107 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
+  ListView _buildListViewOfJiljuTags(
+      List<JiljuTag> jiljuTags, void Function(void Function()) setState) {
+    return ListView.separated(
+      itemBuilder: (context, index) {
+        return InkWell(
+          child: SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: Row(
+              children: <Widget>[
+                const Icon(Icons.tag, size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    jiljuTags[index].name,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, size: 20),
+                  onPressed: () async {
+                    bool? ret = await _showDeleteTagDialog();
+                    if (ret == null || !ret) {
+                      return;
+                    }
+                    setState(() {
+                      DatabaseManager.deleteJiljuTag(jiljuTags[index]);
+                    });
+                  },
+                  splashRadius: 20,
+                ),
+              ],
+            ),
+          ),
+          onTap: () => Navigator.pop(context, jiljuTags[index]),
+        );
+      },
+      separatorBuilder: (context, index) => const Divider(
+        height: 1,
+        thickness: 1,
+      ),
+      itemCount: jiljuTags.length,
+    );
+  }
+
+  ListView _buildListViewOfJiljus(List<Jilju> jiljuList) {
+    return ListView.separated(
+      itemBuilder: (context, index) {
+        return InkWell(
+          child: SizedBox(
+            height: 60,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: <Widget>[
+                  const Icon(Icons.directions_run, size: 20),
+                  Expanded(
+                    flex: 2,
+                    child: Center(
+                      child: Text(
+                        '${dateToString(secondsToDateTime(jiljuList[index].startTime))}\n'
+                        '${timeToString(secondsToDateTime(jiljuList[index].startTime))}'
+                        ' ~ ${timeToString(secondsToDateTime(jiljuList[index].endTime))}',
+                        style: const TextStyle(fontSize: 16),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Center(
+                      child: Text(
+                        '${jiljuList[index].distance.toStringAsFixed(1)} km\n'
+                        '${durationToString(jiljuList[index].totalTime)}',
+                        style: const TextStyle(fontSize: 16),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          onTap: () => _showJiljuDetailDialog(jiljuList[index]),
+        );
+      },
+      separatorBuilder: (context, index) => const Divider(
+        height: 1,
+        thickness: 1,
+      ),
+      itemCount: jiljuList.length,
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        const SizedBox(height: 20),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: _buildDateRangePicker(),
-        ),
-        const SizedBox(height: 20),
+        _buildDateRangePicker(),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: _buildJiljuTagSelector(null, _jiljuTags, setState),

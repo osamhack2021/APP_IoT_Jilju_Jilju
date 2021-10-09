@@ -94,31 +94,28 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              SizedBox(
-                height: 80,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    Center(
-                      child: Text(
-                        _touchedIndex == -1
-                            ? ''
-                            : '${Jilju.getSumOfDistance(jiljuMap.values.toList()[_touchedIndex]).toStringAsFixed(1)} km',
-                        style: const TextStyle(fontSize: 24),
+              if (_touchedIndex != -1)
+                SizedBox(
+                  height: 80,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Center(
+                        child: Text(
+                          '${Jilju.getSumOfDistance(jiljuMap.values.toList()[_touchedIndex]).toStringAsFixed(1)} km',
+                          style: const TextStyle(fontSize: 24),
+                        ),
                       ),
-                    ),
-                    Center(
-                      child: Text(
-                        _touchedIndex == -1
-                            ? ''
-                            : durationToString(Jilju.getSumOfTotalTime(
-                                jiljuMap.values.toList()[_touchedIndex])),
-                        style: const TextStyle(fontSize: 24),
+                      Center(
+                        child: Text(
+                          durationToString(Jilju.getSumOfTotalTime(
+                              jiljuMap.values.toList()[_touchedIndex])),
+                          style: const TextStyle(fontSize: 24),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
             ],
           );
         } else {

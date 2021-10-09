@@ -9,20 +9,23 @@ part 'jilju.g.dart';
 @HiveType(typeId: 0)
 class Jilju extends HiveObject {
   @HiveField(0)
-  int startTime;
+  int id;
 
   @HiveField(1)
-  int endTime;
+  int startTime;
 
   @HiveField(2)
-  double distance;
+  int endTime;
 
   @HiveField(3)
+  double distance;
+
+  @HiveField(4)
   List<JiljuPoint> points;
 
-  Jilju(this.startTime, this.endTime, this.distance, this.points);
+  Jilju(this.id, this.startTime, this.endTime, this.distance, this.points);
 
-  Jilju.fromFileData(String fileData)
+  Jilju.fromFileData(this.id, String fileData)
       : startTime = 0,
         endTime = 0,
         distance = 0,
@@ -36,13 +39,9 @@ class Jilju extends HiveObject {
     }
   }
 
-  Duration totalTime() {
-    return Duration(seconds: endTime - startTime);
-  }
+  Duration get totalTime => Duration(seconds: endTime - startTime);
 
-  double averageSpeed() {
-    return distance / (endTime - startTime) * 3600;
-  }
+  double get averageSpeed => distance / (endTime - startTime) * 3600;
 
   Future<List<JiljuTag>> jiljuTags() async {
     List<JiljuTag> jiljuTags = await DatabaseManager.getAllJiljuTags();
@@ -63,8 +62,11 @@ class Jilju extends HiveObject {
   }
 
   @override
-  String toString() {
-    return '$startTime,$endTime,$distance,$points';
+  int get hashCode => id;
+
+  @override
+  bool operator ==(Object other) {
+    return other is Jilju && hashCode == other.hashCode;
   }
 
   static double getSumOfDistance(List<Jilju> jiljuList) {
@@ -73,7 +75,7 @@ class Jilju extends HiveObject {
 
   static Duration getSumOfTotalTime(List<Jilju> jiljuList) {
     return jiljuList
-        .map((jilju) => jilju.totalTime())
+        .map((jilju) => jilju.totalTime)
         .fold(Duration.zero, (a, b) => a + b);
   }
 }

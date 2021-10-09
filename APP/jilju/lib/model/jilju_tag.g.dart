@@ -18,7 +18,8 @@ class JiljuTagAdapter extends TypeAdapter<JiljuTag> {
     };
     return JiljuTag(
       fields[0] as String,
-    )..jiljus = (fields[1] as List).cast<Jilju>();
+      jiljus: (fields[1] as List).cast<Jilju>(),
+    );
   }
 
   @override

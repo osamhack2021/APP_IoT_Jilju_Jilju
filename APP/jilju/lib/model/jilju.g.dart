@@ -19,22 +19,25 @@ class JiljuAdapter extends TypeAdapter<Jilju> {
     return Jilju(
       fields[0] as int,
       fields[1] as int,
-      fields[2] as double,
-      (fields[3] as List).cast<JiljuPoint>(),
+      fields[2] as int,
+      fields[3] as double,
+      (fields[4] as List).cast<JiljuPoint>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Jilju obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
-      ..write(obj.startTime)
+      ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.endTime)
+      ..write(obj.startTime)
       ..writeByte(2)
-      ..write(obj.distance)
+      ..write(obj.endTime)
       ..writeByte(3)
+      ..write(obj.distance)
+      ..writeByte(4)
       ..write(obj.points);
   }
 
