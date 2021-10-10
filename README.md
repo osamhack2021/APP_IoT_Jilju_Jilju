@@ -27,7 +27,7 @@
 </p>
 
 ## License
-라이선스의 구체적인 내용 및 3rd 소프트웨어에 대해서는 본 레퍼지토리의 LICENSE.md 파일 및 튜토리얼 GitBook의 <a href="https://jilju.gitbook.io/jilju/license">LICENSE 페이지</a>를 참조하십시오.
+라이선스의 구체적인 내용 및 서드 파티 소프트웨어에 대해서는 본 레퍼지토리의 LICENSE.md 파일 및 튜토리얼 GitBook의 <a href="https://jilju.gitbook.io/jilju/license">LICENSE 페이지</a>를 참조하십시오.
 * APP: BSD 3-Clause
 * IoT: GPL v3
 

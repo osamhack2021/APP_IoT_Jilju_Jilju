@@ -66,7 +66,7 @@ class JiljuMainPageState extends State<JiljuMainPage> {
     return Stack(
       children: <Widget>[
         Scaffold(
-          body: _pages[_index],
+          body: SafeArea(child: _pages[_index]),
           bottomNavigationBar: BottomNavigationBar(
             onTap: (index) {
               setState(() {
