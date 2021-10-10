@@ -1,4 +1,4 @@
-package com.example.jilju
+package kr.mil.army.jilju
 
 import io.flutter.embedding.android.FlutterActivity
 
