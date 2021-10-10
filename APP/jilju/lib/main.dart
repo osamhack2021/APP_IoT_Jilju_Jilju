@@ -1,5 +1,7 @@
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:page_transition/page_transition.dart';
 
 import 'detail.dart';
 import 'home.dart';
@@ -27,7 +29,13 @@ class JiljuApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const JiljuMainPage(),
+      home: AnimatedSplashScreen(
+        splash: const Image(image: AssetImage('assets/splash.png')),
+        nextScreen: const JiljuMainPage(),
+        pageTransitionType: PageTransitionType.fade,
+        splashIconSize: 250,
+      ),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

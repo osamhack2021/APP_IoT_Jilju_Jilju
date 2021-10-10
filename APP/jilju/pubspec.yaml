@@ -42,6 +42,7 @@ dependencies:
   intl: ^0.17.0
   toggle_switch: ^1.2.0
   syncfusion_flutter_datepicker: ^19.3.43
+  animated_splash_screen: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -83,15 +84,6 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  fonts:
-    - family: Teko
-      fonts: 
-        - asset: fonts/Teko-Light.ttf
-        - asset: fonts/Teko-Medium.ttf
-        - asset: fonts/Teko-Regular.ttf
-        - asset: fonts/Teko-SemiBold.ttf
-        - asset: fonts/Teko-Bold.ttf
-        
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf
