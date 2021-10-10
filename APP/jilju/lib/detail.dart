@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jilju/util.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import 'chart.dart';
 import 'database.dart';
@@ -29,29 +28,6 @@ class _DetailPageState extends State<DetailPage> {
   DateTime _endDate;
   final List<JiljuTag> _jiljuTags;
   final TextEditingController _tagNameController = TextEditingController();
-
-  Future<PickerDateRange?> _showDatePickerDialog() async {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          child: AspectRatio(
-            aspectRatio: 0.6,
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: SfDateRangePicker(
-                selectionMode: DateRangePickerSelectionMode.range,
-                initialSelectedRange: PickerDateRange(_startDate, _endDate),
-                showActionButtons: true,
-                onSubmit: (value) => Navigator.pop(context, value),
-                onCancel: () => Navigator.pop(context),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
 
   Future<void> _showJiljuDetailDialog(Jilju jilju) async {
     List<JiljuTag> jiljuTags = await jilju.jiljuTags();
@@ -306,13 +282,18 @@ class _DetailPageState extends State<DetailPage> {
         ),
       ),
       onTap: () async {
-        PickerDateRange? pickerDateRange = await _showDatePickerDialog();
-        if (pickerDateRange == null) {
+        DateTimeRange? dateTimeRange = await showDateRangePicker(
+          context: context,
+          initialDateRange: DateTimeRange(start: _startDate, end: _endDate),
+          firstDate: DateTime.utc(2020, 1, 1),
+          lastDate: DateTime.utc(2029, 12, 31),
+        );
+        if (dateTimeRange == null) {
           return;
         }
         setState(() {
-          _startDate = pickerDateRange.startDate!;
-          _endDate = pickerDateRange.endDate ?? _startDate;
+          _startDate = dateTimeRange.start;
+          _endDate = dateTimeRange.end;
         });
       },
     );

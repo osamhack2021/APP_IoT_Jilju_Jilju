@@ -61,7 +61,11 @@ class _JiljuBarChartState extends State<JiljuBarChart> {
         bottomTitles: SideTitles(
           showTitles: true,
           getTitles: (value) {
-            DateTime dateTime = widget._jiljuMap.keys.toList()[value.toInt()];
+            int idx = value.toInt();
+            if (idx >= widget._jiljuMap.length) {
+              return '';
+            }
+            DateTime dateTime = widget._jiljuMap.keys.toList()[idx];
             return DateFormat('MM/dd').format(dateTime);
           },
           getTextStyles: (context, value) => const TextStyle(
@@ -142,7 +146,11 @@ class _JiljuLineChartState extends State<JiljuLineChart> {
         bottomTitles: SideTitles(
           showTitles: true,
           getTitles: (value) {
-            DateTime dateTime = widget._jiljuMap.keys.toList()[value.toInt()];
+            int idx = value.toInt();
+            if (idx >= widget._jiljuMap.length) {
+              return '';
+            }
+            DateTime dateTime = widget._jiljuMap.keys.toList()[idx];
             return DateFormat('MM/dd').format(dateTime);
           },
           getTextStyles: (context, value) => const TextStyle(
