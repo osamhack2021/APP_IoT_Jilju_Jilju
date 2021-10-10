@@ -1,4 +1,6 @@
 # 질주, 군장병 뜀걸음 이력 관리 시스템
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fosamhack2021%2FAPP_IoT_Jilju_Jilju.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fosamhack2021%2FAPP_IoT_Jilju_Jilju?ref=badge_shield)
+
 
 ## Introduction
 <p align="center">
@@ -30,6 +32,9 @@
 라이선스의 구체적인 내용 및 3rd 소프트웨어에 대해서는 본 레퍼지토리의 LICENSE.md 파일 및 튜토리얼 GitBook의 <a href="https://jilju.gitbook.io/jilju/license">LICENSE 페이지</a>를 참조하십시오.
 * APP: BSD 3-Clause
 * IoT: GPL v3
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fosamhack2021%2FAPP_IoT_Jilju_Jilju.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fosamhack2021%2FAPP_IoT_Jilju_Jilju?ref=badge_large)
 
 ## Copyright
 Copyrightⓒ 2021 Jilju, All rights reserved.
