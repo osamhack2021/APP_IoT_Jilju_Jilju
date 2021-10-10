@@ -21,7 +21,6 @@ class MessageManager {
       builder: (context) {
         return AlertDialog(
           title: const Text('알림'),
-          titleTextStyle: const TextStyle(fontSize: 20),
           content: Text(
             messageString[messageId],
             style: const TextStyle(fontSize: 16),
