@@ -63,19 +63,10 @@ class _DetailPageState extends State<DetailPage> {
           content: Wrap(
             children: <Widget>[
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  AspectRatio(
-                    aspectRatio: 1,
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        return CustomPaint(
-                          painter: _JiljuPainter(jilju),
-                          size:
-                              Size(constraints.maxWidth, constraints.maxHeight),
-                        );
-                      },
-                    ),
+                  CustomPaint(
+                    painter: _JiljuPainter(jilju),
+                    size: const Size(192, 192),
                   ),
                   const SizedBox(height: 10),
                   StatefulBuilder(
