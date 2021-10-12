@@ -1,5 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+const defaultUserWeight = 60;
 
 Future<String> readFileAsString(String fileName) {
   return rootBundle.loadString('assets/' + fileName);
@@ -25,4 +28,14 @@ String durationToString(Duration duration) {
 
 DateTime secondsToDateTime(int secondsSinceEpoch) {
   return DateTime.fromMillisecondsSinceEpoch(secondsSinceEpoch * 1000);
+}
+
+Future<int> getUserWeight() async {
+  var prefs = await SharedPreferences.getInstance();
+  return prefs.getInt('userWeight') ?? defaultUserWeight;
+}
+
+Future<bool> setUserWeight(int weight) async {
+  var prefs = await SharedPreferences.getInstance();
+  return prefs.setInt('userWeight', weight);
 }

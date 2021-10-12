@@ -8,6 +8,7 @@ import 'home.dart';
 import 'model/jilju.dart';
 import 'model/jilju_point.dart';
 import 'model/jilju_tag.dart';
+import 'setting.dart';
 import 'sync.dart';
 
 void main() async {
@@ -50,7 +51,8 @@ class JiljuMainPageState extends State<JiljuMainPage> {
   final _pages = [
     const HomePage(),
     const DetailPage(),
-    SyncPage(),
+    const SyncPage(),
+    const SettingPage(),
   ];
   int _index = 0;
   bool _isProgressVisible = false;
@@ -68,6 +70,7 @@ class JiljuMainPageState extends State<JiljuMainPage> {
         Scaffold(
           body: SafeArea(child: _pages[_index]),
           bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
             onTap: (index) {
               setState(() {
                 _index = index;
@@ -78,6 +81,7 @@ class JiljuMainPageState extends State<JiljuMainPage> {
               BottomNavigationBarItem(label: '', icon: Icon(Icons.home)),
               BottomNavigationBarItem(label: '', icon: Icon(Icons.event_note)),
               BottomNavigationBarItem(label: '', icon: Icon(Icons.sync)),
+              BottomNavigationBarItem(label: '', icon: Icon(Icons.settings)),
             ],
             showSelectedLabels: false,
             showUnselectedLabels: false,

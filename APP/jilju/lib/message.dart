@@ -12,6 +12,7 @@ class MessageManager {
     '등록된 태그가 없습니다!',
     '태그 이름을 입력하십시오.',
     '태그를 삭제하시겠습니까?',
+    '몸무게는 소모 칼로리 계산에 사용됩니다.'
   ];
 
   static Future<void> showMessageDialog(

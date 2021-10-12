@@ -11,9 +11,7 @@ import 'message.dart';
 import 'model/jilju.dart';
 
 class SyncPage extends StatefulWidget {
-  SyncPage({Key? key}) : super(key: key);
-
-  final FlutterBlue _flutterBlue = FlutterBlue.instance;
+  const SyncPage({Key? key}) : super(key: key);
 
   @override
   State<SyncPage> createState() => _SyncPageState();
@@ -196,14 +194,15 @@ class _SyncPageState extends State<SyncPage> {
   @override
   void initState() {
     super.initState();
-    widget._flutterBlue.scanResults.listen((results) {
+    FlutterBlue.instance.scanResults.listen((results) {
       for (ScanResult result in results) {
         if (result.device.name == 'Jilju') {
           _addDeviceToSet(result.device);
         }
       }
     });
-    widget._flutterBlue.startScan();
+    FlutterBlue.instance.startScan();
+    _addDeviceToSet(_VirtualDevice('Virtual Device for Test'));
   }
 
   ListView _buildListViewOfDevices() {
