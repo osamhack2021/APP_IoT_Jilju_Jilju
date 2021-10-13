@@ -31,6 +31,7 @@ class _DetailPageState extends State<DetailPage> {
 
   Future<void> _showJiljuDetailDialog(Jilju jilju) async {
     List<JiljuTag> jiljuTags = await jilju.jiljuTags();
+    int userWeight = await getUserWeight();
     return showDialog(
       context: context,
       builder: (context) {
@@ -119,7 +120,13 @@ class _DetailPageState extends State<DetailPage> {
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      Expanded(child: SizedBox.shrink()),
+                      Expanded(
+                        child: Text(
+                          '소모 칼로리',
+                          style: TextStyle(fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                     ],
                   ),
                   Row(
@@ -131,7 +138,13 @@ class _DetailPageState extends State<DetailPage> {
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      const Expanded(child: SizedBox.shrink()),
+                      Expanded(
+                        child: Text(
+                          '${caloriesBurned(userWeight, jilju.averageSpeed, jilju.totalTime.inMinutes).toStringAsFixed(1)} kcal',
+                          style: const TextStyle(fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                     ],
                   ),
                 ],

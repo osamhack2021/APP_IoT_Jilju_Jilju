@@ -39,3 +39,12 @@ Future<bool> setUserWeight(int weight) async {
   var prefs = await SharedPreferences.getInstance();
   return prefs.setInt('userWeight', weight);
 }
+
+double speedToMet(double speed) {
+  return 1.138 * speed - 1.98;
+}
+
+/// weight (kg), speed (km/h), time (min)
+double caloriesBurned(int weight, double speed, int time) {
+  return 3.5 * speedToMet(speed) * weight * time / 1000 * 5;
+}

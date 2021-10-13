@@ -78,8 +78,9 @@ class DatabaseManager {
     Random random = Random(seed);
     int fileId = 1;
     for (int day = -29; day <= 0; day++) {
+      int j = 0;
       for (int i = 1; i < 3; i++) {
-        for (int j = 0; random.nextBool(); j++) {
+        for (; random.nextBool(); j++) {
           int startTime = DateTime.now()
               .add(Duration(days: day, hours: j))
               .millisecondsSinceEpoch;
