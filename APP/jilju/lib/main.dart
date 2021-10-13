@@ -10,6 +10,8 @@ import 'model/jilju_point.dart';
 import 'model/jilju_tag.dart';
 import 'setting.dart';
 import 'sync.dart';
+import 'theme.dart';
+import 'util.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -24,18 +26,27 @@ class JiljuApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Jilju',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: AnimatedSplashScreen(
-        splash: const Image(image: AssetImage('assets/splash.png')),
-        nextScreen: const JiljuMainPage(),
-        pageTransitionType: PageTransitionType.fade,
-        splashIconSize: 250,
-      ),
-      debugShowCheckedModeBanner: false,
+    return FutureBuilder(
+      future: getTheme(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          JiljuTheme jiljuTheme = snapshot.data as JiljuTheme;
+          return MaterialApp(
+            title: 'Jilju',
+            theme: jiljuTheme.theme,
+            home: AnimatedSplashScreen(
+              splash: Image(
+                  image: AssetImage('assets/splash_${jiljuTheme.name}.png')),
+              nextScreen: const JiljuMainPage(),
+              pageTransitionType: PageTransitionType.fade,
+              splashIconSize: 250,
+            ),
+            debugShowCheckedModeBanner: false,
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
+      },
     );
   }
 }

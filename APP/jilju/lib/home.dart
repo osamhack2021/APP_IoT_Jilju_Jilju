@@ -46,6 +46,7 @@ class _HomePageState extends State<HomePage> {
                     _touchedIndex = -1;
                   });
                 },
+                activeBgColor: const [Colors.blue],
               ),
               SizedBox(
                 height: 80,
