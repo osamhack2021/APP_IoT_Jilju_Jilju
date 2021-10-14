@@ -3,9 +3,9 @@ import 'dart:math';
 
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'model/jilju.dart';
 import 'model/jilju_tag.dart';
 import 'util.dart';
-import 'model/jilju.dart';
 
 class DatabaseManager {
   static final Future<Box<Jilju>> _jiljuBox = Hive.openBox<Jilju>('jilju');

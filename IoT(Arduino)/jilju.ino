@@ -16,8 +16,17 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+/*
+  Arduino_MKRGPS 1.0.0
+  https://github.com/arduino-libraries/Arduino_MKRGPS
+*/
 #include <Arduino_MKRGPS.h>
+/*
+  ArduinoBLE 1.2.1
+  https://github.com/arduino-libraries/ArduinoBLE
+*/
 #include <ArduinoBLE.h>
+
 #include <SPI.h>
 #include <SD.h>
 
