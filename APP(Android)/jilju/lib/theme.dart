@@ -20,4 +20,13 @@ extension JiljuThemeExtension on JiljuTheme {
         return 'dark';
     }
   }
+
+  Color get splashScreenBackgroundColor {
+    switch (this) {
+      case JiljuTheme.light:
+        return Colors.white;
+      case JiljuTheme.dark:
+        return Colors.black;
+    }
+  }
 }

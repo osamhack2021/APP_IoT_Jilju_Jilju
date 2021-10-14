@@ -11,7 +11,6 @@ import 'model/jilju_tag.dart';
 import 'setting.dart';
 import 'sync.dart';
 import 'theme.dart';
-import 'util.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -40,6 +39,7 @@ class JiljuApp extends StatelessWidget {
               nextScreen: const JiljuMainPage(),
               pageTransitionType: PageTransitionType.fade,
               splashIconSize: 250,
+              backgroundColor: jiljuTheme.splashScreenBackgroundColor,
             ),
             debugShowCheckedModeBanner: false,
           );

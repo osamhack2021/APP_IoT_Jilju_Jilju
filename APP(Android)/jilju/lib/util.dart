@@ -1,8 +1,5 @@
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import 'theme.dart';
 
 const defaultUserWeight = 60;
 
@@ -30,34 +27,6 @@ String durationToString(Duration duration) {
 
 DateTime secondsToDateTime(int secondsSinceEpoch) {
   return DateTime.fromMillisecondsSinceEpoch(secondsSinceEpoch * 1000);
-}
-
-Future<int> getUserWeight() async {
-  var prefs = await SharedPreferences.getInstance();
-  return prefs.getInt('userWeight') ?? defaultUserWeight;
-}
-
-Future<bool> setUserWeight(int weight) async {
-  var prefs = await SharedPreferences.getInstance();
-  return prefs.setInt('userWeight', weight);
-}
-
-Future<JiljuTheme> getTheme() async {
-  var prefs = await SharedPreferences.getInstance();
-  String themeName = prefs.getString('theme') ?? JiljuTheme.values[0].name;
-  return JiljuTheme.values
-      .where((jiljuTheme) => jiljuTheme.name == themeName)
-      .first;
-}
-
-Future<bool> setTheme(String themeName) async {
-  if (!JiljuTheme.values
-      .map((jiljuTheme) => jiljuTheme.name)
-      .contains(themeName)) {
-    throw Exception();
-  }
-  var prefs = await SharedPreferences.getInstance();
-  return prefs.setString('theme', themeName);
 }
 
 double speedToMet(double speed) {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:jilju/theme.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'message.dart';
 import 'util.dart';
@@ -12,10 +14,11 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
-  late int _numberPickerValue;
+  late int _userWeight, _numberPickerValue;
+  late JiljuTheme _jiljuTheme, _themeSelectionValue;
 
-  Future<int?> _showWeightInputDialog(int currentWeight) async {
-    _numberPickerValue = currentWeight;
+  Future<int?> _showWeightInputDialog() async {
+    _numberPickerValue = _userWeight;
     return showDialog(
       context: context,
       builder: (context) {
@@ -43,8 +46,67 @@ class _SettingPageState extends State<SettingPage> {
             ),
             TextButton(
               child: const Text('OK'),
+              onPressed: () => Navigator.pop(context, _numberPickerValue),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<JiljuTheme?> _showThemeSelectionDialog() async {
+    _themeSelectionValue = _jiljuTheme;
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('테마 선택'),
+          content: StatefulBuilder(
+            builder: (context, setState) {
+              return Wrap(
+                children: <Widget>[
+                  Column(
+                    children: JiljuTheme.values
+                        .map((jiljuTheme) => SizedBox(
+                              height: 50,
+                              child: InkWell(
+                                child: Row(
+                                  children: <Widget>[
+                                    Radio<JiljuTheme>(
+                                        value: jiljuTheme,
+                                        groupValue: _themeSelectionValue,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _themeSelectionValue = value!;
+                                          });
+                                        }),
+                                    const SizedBox(width: 10),
+                                    Text(jiljuTheme.name,
+                                        style: const TextStyle(fontSize: 20)),
+                                  ],
+                                ),
+                                onTap: () {
+                                  setState(() {
+                                    _themeSelectionValue = jiljuTheme;
+                                  });
+                                },
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                ],
+              );
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('CANCEL'),
+              onPressed: () => Navigator.pop(context),
+            ),
+            TextButton(
+              child: const Text('OK'),
               onPressed: () {
-                Navigator.pop(context, _numberPickerValue);
+                Navigator.pop(context, _themeSelectionValue);
               },
             ),
           ],
@@ -56,50 +118,94 @@ class _SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getUserWeight(),
+      future: getAllSettings(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          int userWeight = snapshot.data as int;
-          return Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Center(
-                  child: Text(
-                    '설정',
-                    style: TextStyle(fontSize: 20),
+          Map<String, dynamic> settings = snapshot.data as Map<String, dynamic>;
+          _userWeight = settings['userWeight'];
+          _jiljuTheme = settings['theme'];
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const SizedBox(height: 20),
+              const Center(
+                child: Text('설정', style: TextStyle(fontSize: 20)),
+              ),
+              const SizedBox(height: 10),
+              Card(
+                margin:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 0,
+                child: InkWell(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                    child: Row(
+                      children: <Widget>[
+                        const Expanded(
+                            child: Text('몸무게', style: TextStyle(fontSize: 20))),
+                        Text('$_userWeight kg',
+                            style: const TextStyle(fontSize: 20)),
+                      ],
+                    ),
                   ),
+                  onTap: () async {
+                    int? weight = await _showWeightInputDialog();
+                    if (weight == null) {
+                      return;
+                    }
+                    setState(() {
+                      setUserWeight(weight);
+                    });
+                  },
                 ),
-                const SizedBox(height: 20),
-                Row(
-                  children: <Widget>[
-                    const Icon(Icons.circle, size: 10),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text('몸무게: $userWeight kg',
-                          style: const TextStyle(fontSize: 20)),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.settings, size: 20),
-                      onPressed: () async {
-                        int? weight = await _showWeightInputDialog(userWeight);
-                        if (weight == null) {
-                          return;
-                        }
-                        setState(() {
-                          setUserWeight(weight);
-                        });
-                      },
-                      splashRadius: 20,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Text(MessageManager.messageString[10],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 40),
+                child: Text(MessageManager.messageString[10],
                     style: const TextStyle(fontSize: 12)),
-              ],
-            ),
+              ),
+              const SizedBox(height: 10),
+              Card(
+                margin:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 0,
+                child: InkWell(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                    child: Row(
+                      children: <Widget>[
+                        const Expanded(
+                            child: Text('테마', style: TextStyle(fontSize: 20))),
+                        Text(_jiljuTheme.name,
+                            style: const TextStyle(fontSize: 20)),
+                      ],
+                    ),
+                  ),
+                  onTap: () async {
+                    JiljuTheme? jiljuTheme = await _showThemeSelectionDialog();
+                    if (jiljuTheme == null) {
+                      return;
+                    }
+                    setState(() {
+                      setTheme(jiljuTheme);
+                    });
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 40),
+                child: Text(MessageManager.messageString[11],
+                    style: const TextStyle(fontSize: 12)),
+              ),
+            ],
           );
         } else {
           return const SizedBox.shrink();
@@ -107,4 +213,34 @@ class _SettingPageState extends State<SettingPage> {
       },
     );
   }
+}
+
+Future<int> getUserWeight() async {
+  var prefs = await SharedPreferences.getInstance();
+  return prefs.getInt('userWeight') ?? defaultUserWeight;
+}
+
+Future<bool> setUserWeight(int weight) async {
+  var prefs = await SharedPreferences.getInstance();
+  return prefs.setInt('userWeight', weight);
+}
+
+Future<JiljuTheme> getTheme() async {
+  var prefs = await SharedPreferences.getInstance();
+  String themeName = prefs.getString('theme') ?? JiljuTheme.values[0].name;
+  return JiljuTheme.values
+      .where((jiljuTheme) => jiljuTheme.name == themeName)
+      .first;
+}
+
+Future<bool> setTheme(JiljuTheme jiljuTheme) async {
+  var prefs = await SharedPreferences.getInstance();
+  return prefs.setString('theme', jiljuTheme.name);
+}
+
+Future<Map<String, dynamic>> getAllSettings() async {
+  Map<String, dynamic> settings = {};
+  settings['userWeight'] = await getUserWeight();
+  settings['theme'] = await getTheme();
+  return settings;
 }

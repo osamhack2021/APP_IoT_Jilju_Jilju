@@ -10,6 +10,7 @@ import 'database.dart';
 import 'message.dart';
 import 'model/jilju.dart';
 import 'model/jilju_tag.dart';
+import 'setting.dart';
 
 class DetailPage extends StatefulWidget {
   const DetailPage({Key? key}) : super(key: key);
@@ -40,6 +41,7 @@ class _DetailPageState extends State<DetailPage> {
           content: Wrap(
             children: <Widget>[
               Column(
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   CustomPaint(
                     painter: _JiljuPainter(jilju),
@@ -537,11 +539,16 @@ class _JiljuPainter extends CustomPainter {
     int minX = _jilju.points.map((jiljuPoint) => jiljuPoint.x).reduce(min);
     int minY = _jilju.points.map((jiljuPoint) => jiljuPoint.y).reduce(min);
     int maxLength = max(maxX - minX, maxY - minY) + 1;
+    int plusX =
+        ((size.width - 1) - ((maxX - minX) * size.width ~/ maxLength)) ~/ 2;
+    int plusY =
+        ((size.height - 1) - ((maxY - minY) * size.height ~/ maxLength)) ~/ 2;
     List<Offset> points = _jilju.points
         .map((jiljuPoint) => Offset(
-            ((jiljuPoint.x - minX) * size.width ~/ maxLength).toDouble(),
+            ((jiljuPoint.x - minX) * size.width ~/ maxLength + plusX)
+                .toDouble(),
             (size.height - 1) -
-                ((jiljuPoint.y - minY) * size.height ~/ maxLength)))
+                ((jiljuPoint.y - minY) * size.height ~/ maxLength + plusY)))
         .toList();
     Paint paint = Paint()
       ..color = Colors.black
