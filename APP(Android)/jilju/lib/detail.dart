@@ -37,7 +37,7 @@ class _DetailPageState extends State<DetailPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('질주 상세'),
+          title: Text('${jilju.id}번째 질주'),
           content: Wrap(
             children: <Widget>[
               Column(
