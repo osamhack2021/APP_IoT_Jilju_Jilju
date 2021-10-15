@@ -70,7 +70,7 @@ class DatabaseManager {
     return box.keys.isEmpty ? 1 : (box.keys.last + 1);
   }
 
-  static Future<void> loadSampleDatas(int seed) async {
+  static Future<void> loadSampleData(int seed) async {
     List<String> sampleDatas = [];
     for (int i = 1; i < 3; i++) {
       sampleDatas.add(await readFileAsString('sample_data_$i.txt'));
@@ -92,5 +92,12 @@ class DatabaseManager {
         }
       }
     }
+  }
+
+  static Future<void> clearAllData() async {
+    var jiljuBox = await _jiljuBox;
+    var jiljuTagBox = await _jiljuTagBox;
+    await jiljuBox.clear();
+    await jiljuTagBox.clear();
   }
 }

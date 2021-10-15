@@ -258,28 +258,6 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  Future<bool?> _showDeleteTagDialog() async {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('알림'),
-          content: Text(MessageManager.messageString[9]),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('YES'),
-              onPressed: () => Navigator.pop(context, true),
-            ),
-            TextButton(
-              child: const Text('NO'),
-              onPressed: () => Navigator.pop(context, false),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Widget _buildDateRangePicker() {
     return InkWell(
       child: Padding(
@@ -391,8 +369,9 @@ class _DetailPageState extends State<DetailPage> {
                 IconButton(
                   icon: const Icon(Icons.delete_outline, size: 20),
                   onPressed: () async {
-                    bool? ret = await _showDeleteTagDialog();
-                    if (ret == null || !ret) {
+                    bool? delete =
+                        await MessageManager.showYesNoDialog(context, 9);
+                    if (delete == null || !delete) {
                       return;
                     }
                     setState(() {

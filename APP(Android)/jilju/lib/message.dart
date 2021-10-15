@@ -14,6 +14,8 @@ class MessageManager {
     '태그를 삭제하시겠습니까?',
     '소모 칼로리 계산에 사용됩니다.',
     '앱을 재시작해야 적용됩니다.',
+    '모든 데이터를 지웁니다. 이 작업은 돌이킬 수 없습니다.',
+    '모든 데이터를 지웠습니다.',
   ];
 
   static Future<void> showMessageDialog(
@@ -31,6 +33,29 @@ class MessageManager {
             TextButton(
               child: const Text('OK'),
               onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  static Future<bool?> showYesNoDialog(
+      BuildContext context, int messageId) async {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('알림'),
+          content: Text(MessageManager.messageString[messageId]),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('YES'),
+              onPressed: () => Navigator.pop(context, true),
+            ),
+            TextButton(
+              child: const Text('NO'),
+              onPressed: () => Navigator.pop(context, false),
             ),
           ],
         );

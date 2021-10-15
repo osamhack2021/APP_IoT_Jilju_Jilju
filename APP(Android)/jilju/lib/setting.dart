@@ -3,6 +3,8 @@ import 'package:jilju/theme.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'database.dart';
+import 'main.dart';
 import 'message.dart';
 import 'util.dart';
 
@@ -115,6 +117,12 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
+  void _setProgressVisible(bool visible) {
+    context
+        .findAncestorStateOfType<JiljuMainPageState>()!
+        .setProgressVisible(visible);
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -204,6 +212,42 @@ class _SettingPageState extends State<SettingPage> {
                 padding: const EdgeInsets.only(left: 40),
                 child: Text(MessageManager.messageString[11],
                     style: const TextStyle(fontSize: 12)),
+              ),
+              const SizedBox(height: 10),
+              Card(
+                margin:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 0,
+                child: InkWell(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                    child: Row(
+                      children: const <Widget>[
+                        Expanded(
+                          child: Text(
+                            '모든 데이터 지우기',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  onTap: () async {
+                    bool? clear =
+                        await MessageManager.showYesNoDialog(context, 12);
+                    if (clear == null || !clear) {
+                      return;
+                    }
+                    _setProgressVisible(true);
+                    await DatabaseManager.clearAllData();
+                    _setProgressVisible(false);
+                    await MessageManager.showMessageDialog(context, 13);
+                  },
+                ),
               ),
             ],
           );
