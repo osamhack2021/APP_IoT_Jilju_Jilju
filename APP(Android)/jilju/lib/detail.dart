@@ -543,7 +543,7 @@ class _JiljuPainter extends CustomPainter {
         ((size.width - 1) - ((maxX - minX) * size.width ~/ maxLength)) ~/ 2;
     int plusY =
         ((size.height - 1) - ((maxY - minY) * size.height ~/ maxLength)) ~/ 2;
-    List<Offset> points = _jilju.points
+    List<Offset> offsets = _jilju.points
         .map((jiljuPoint) => Offset(
             ((jiljuPoint.x - minX) * size.width ~/ maxLength + plusX)
                 .toDouble(),
@@ -555,12 +555,20 @@ class _JiljuPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
     const Color startColor = Colors.greenAccent;
     const Color endColor = Colors.redAccent;
-    for (int i = 1; i < points.length; i++) {
-      paint.shader = ui.Gradient.linear(points[i - 1], points[i], [
-        Color.lerp(startColor, endColor, (i - 1) / (points.length - 1))!,
-        Color.lerp(startColor, endColor, i / (points.length - 1))!
+    for (int i = 1; i < offsets.length; i++) {
+      paint.shader = ui.Gradient.linear(offsets[i - 1], offsets[i], [
+        Color.lerp(
+            startColor,
+            endColor,
+            _jilju.points[i - 1].time /
+                _jilju.points[_jilju.points.length - 1].time)!,
+        Color.lerp(
+            startColor,
+            endColor,
+            _jilju.points[i].time /
+                _jilju.points[_jilju.points.length - 1].time)!
       ]);
-      canvas.drawLine(points[i - 1], points[i], paint);
+      canvas.drawLine(offsets[i - 1], offsets[i], paint);
     }
   }
 
