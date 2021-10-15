@@ -9,6 +9,7 @@ import 'chart.dart';
 import 'database.dart';
 import 'message.dart';
 import 'model/jilju.dart';
+import 'model/jilju_point.dart';
 import 'model/jilju_tag.dart';
 import 'setting.dart';
 
@@ -528,22 +529,42 @@ class _DetailPageState extends State<DetailPage> {
 }
 
 class _JiljuPainter extends CustomPainter {
-  final Jilju _jilju;
+  final List<JiljuPoint> _points;
 
-  _JiljuPainter(this._jilju);
+  _JiljuPainter(Jilju jilju) : _points = [] {
+    _points.add(jilju.points[0]);
+    int from = 0;
+    while (from < jilju.points.length - 1) {
+      int to = from + 1;
+      double sumOfDistance =
+          jilju.points[from].calculateDistance(jilju.points[to]);
+      while (to < jilju.points.length - 1) {
+        sumOfDistance +=
+            jilju.points[to].calculateDistance(jilju.points[to + 1]);
+        if (sumOfDistance -
+                jilju.points[from].calculateDistance(jilju.points[to]) >
+            0.02) {
+          break;
+        }
+        to++;
+      }
+      _points.add(jilju.points[to]);
+      from = to;
+    }
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
-    int maxX = _jilju.points.map((jiljuPoint) => jiljuPoint.x).reduce(max);
-    int maxY = _jilju.points.map((jiljuPoint) => jiljuPoint.y).reduce(max);
-    int minX = _jilju.points.map((jiljuPoint) => jiljuPoint.x).reduce(min);
-    int minY = _jilju.points.map((jiljuPoint) => jiljuPoint.y).reduce(min);
+    int maxX = _points.map((jiljuPoint) => jiljuPoint.x).reduce(max);
+    int maxY = _points.map((jiljuPoint) => jiljuPoint.y).reduce(max);
+    int minX = _points.map((jiljuPoint) => jiljuPoint.x).reduce(min);
+    int minY = _points.map((jiljuPoint) => jiljuPoint.y).reduce(min);
     int maxLength = max(maxX - minX, maxY - minY) + 1;
     int plusX =
         ((size.width - 1) - ((maxX - minX) * size.width ~/ maxLength)) ~/ 2;
     int plusY =
         ((size.height - 1) - ((maxY - minY) * size.height ~/ maxLength)) ~/ 2;
-    List<Offset> offsets = _jilju.points
+    List<Offset> offsets = _points
         .map((jiljuPoint) => Offset(
             ((jiljuPoint.x - minX) * size.width ~/ maxLength + plusX)
                 .toDouble(),
@@ -557,16 +578,10 @@ class _JiljuPainter extends CustomPainter {
     const Color endColor = Colors.redAccent;
     for (int i = 1; i < offsets.length; i++) {
       paint.shader = ui.Gradient.linear(offsets[i - 1], offsets[i], [
-        Color.lerp(
-            startColor,
-            endColor,
-            _jilju.points[i - 1].time /
-                _jilju.points[_jilju.points.length - 1].time)!,
-        Color.lerp(
-            startColor,
-            endColor,
-            _jilju.points[i].time /
-                _jilju.points[_jilju.points.length - 1].time)!
+        Color.lerp(startColor, endColor,
+            _points[i - 1].time / _points[_points.length - 1].time)!,
+        Color.lerp(startColor, endColor,
+            _points[i].time / _points[_points.length - 1].time)!
       ]);
       canvas.drawLine(offsets[i - 1], offsets[i], paint);
     }
