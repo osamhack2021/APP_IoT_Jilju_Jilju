@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'dart:ui';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -551,17 +551,17 @@ class _JiljuPainter extends CustomPainter {
                 ((jiljuPoint.y - minY) * size.height ~/ maxLength + plusY)))
         .toList();
     Paint paint = Paint()
-      ..color = Colors.black
       ..strokeWidth = 1
       ..strokeCap = StrokeCap.round;
-    canvas.drawPoints(PointMode.polygon, points, paint);
-    paint
-      ..color = Colors.greenAccent
-      ..strokeWidth = 10
-      ..strokeCap = StrokeCap.square;
-    canvas.drawPoints(PointMode.points, [points[0]], paint);
-    paint.color = Colors.redAccent;
-    canvas.drawPoints(PointMode.points, [points[points.length - 1]], paint);
+    const Color startColor = Colors.greenAccent;
+    const Color endColor = Colors.redAccent;
+    for (int i = 1; i < points.length; i++) {
+      paint.shader = ui.Gradient.linear(points[i - 1], points[i], [
+        Color.lerp(startColor, endColor, (i - 1) / (points.length - 1))!,
+        Color.lerp(startColor, endColor, i / (points.length - 1))!
+      ]);
+      canvas.drawLine(points[i - 1], points[i], paint);
+    }
   }
 
   @override
