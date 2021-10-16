@@ -202,7 +202,6 @@ class _SyncPageState extends State<SyncPage> {
       }
     });
     FlutterBlue.instance.startScan();
-    _addDeviceToSet(_VirtualDevice('Virtual Device for Test'));
   }
 
   ListView _buildListViewOfDevices() {
