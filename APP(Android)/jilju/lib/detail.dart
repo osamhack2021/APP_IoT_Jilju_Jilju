@@ -521,8 +521,8 @@ class _JiljuPainter extends CustomPainter {
         sumOfDistance +=
             jilju.points[to].calculateDistance(jilju.points[to + 1]);
         if (sumOfDistance -
-                jilju.points[from].calculateDistance(jilju.points[to]) >
-            0.02) {
+                jilju.points[from].calculateDistance(jilju.points[to + 1]) >
+            0.01) {
           break;
         }
         to++;
