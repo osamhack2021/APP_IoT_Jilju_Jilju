@@ -25,7 +25,7 @@ class _SettingPageState extends State<SettingPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('몸무게 수정'),
+          title: const Text('몸무게 변경'),
           content: StatefulBuilder(
             builder: (context, setState) {
               return NumberPicker(
