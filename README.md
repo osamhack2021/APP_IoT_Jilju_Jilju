@@ -18,7 +18,7 @@
 </p>
 
 ## Contribution
-소통은 문서화에 유리한 **Notion 페이지**에서 이루어집니다.
+소통은 실시간 소통이 가능하고 문서화에 유리한 **Notion 페이지**에서 이루어집니다.
 
 <p align="center">
   <a href="https://almondine-trumpet-4ea.notion.site/2228fbadc7144d19955c9f2e8e97064e" target="_blank">
