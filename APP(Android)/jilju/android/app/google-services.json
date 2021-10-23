@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "630332447395",
+    "project_id": "jilju-cafd4",
+    "storage_bucket": "jilju-cafd4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:630332447395:android:06d8e7217a5d68515dbd16",
+        "android_client_info": {
+          "package_name": "kr.mil.army.jilju"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "630332447395-46jt1sl535rph46sgenihbfd3foqhumn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3rgLGDzKorUvE2EMC4vR2WXs6nNKqlYk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "630332447395-46jt1sl535rph46sgenihbfd3foqhumn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -42,3 +42,20 @@ class JiljuTagAdapter extends TypeAdapter<JiljuTag> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+JiljuTag _$JiljuTagFromJson(Map<String, dynamic> json) => JiljuTag(
+      json['name'] as String,
+      jiljus: (json['jiljus'] as List<dynamic>?)
+              ?.map((e) => Jilju.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+    );
+
+Map<String, dynamic> _$JiljuTagToJson(JiljuTag instance) => <String, dynamic>{
+      'name': instance.name,
+      'jiljus': instance.jiljus,
+    };

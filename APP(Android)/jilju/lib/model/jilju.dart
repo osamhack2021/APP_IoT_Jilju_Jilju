@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 import '../database.dart';
 import 'jilju_point.dart';
@@ -6,6 +7,7 @@ import 'jilju_tag.dart';
 
 part 'jilju.g.dart';
 
+@JsonSerializable()
 @HiveType(typeId: 0)
 class Jilju extends HiveObject {
   @HiveField(0)
@@ -60,6 +62,10 @@ class Jilju extends HiveObject {
     distance += points.last.calculateDistance(jiljuPoint);
     points.add(jiljuPoint);
   }
+
+  factory Jilju.fromJson(Map<String, dynamic> json) => _$JiljuFromJson(json);
+
+  Map<String, dynamic> toJson() => _$JiljuToJson(this);
 
   @override
   int get hashCode => id;

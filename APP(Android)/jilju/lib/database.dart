@@ -100,4 +100,21 @@ class DatabaseManager {
     await jiljuBox.clear();
     await jiljuTagBox.clear();
   }
+
+  static Future<Map<String, dynamic>> toJson() async {
+    var jiljuBox = await _jiljuBox;
+    var jiljuTagBox = await _jiljuTagBox;
+    return {
+      'jilju': jiljuBox.toMap(),
+      'jiljuTag': jiljuTagBox.toMap(),
+    };
+  }
+
+  static Future<void> fromJson(Map<String, dynamic> json) async {
+    await clearAllData();
+    var jiljuBox = await _jiljuBox;
+    var jiljuTagBox = await _jiljuTagBox;
+    await jiljuBox.putAll(json['jilju']);
+    await jiljuTagBox.putAll(json['jiljuTag']);
+  }
 }
