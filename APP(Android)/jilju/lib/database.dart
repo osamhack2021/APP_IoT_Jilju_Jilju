@@ -117,7 +117,6 @@ class DatabaseManager {
 
   static Future<void> fromJson(String jsonString) async {
     Map<String, dynamic> json = jsonDecode(jsonString);
-    await clearAllData();
     var jiljuBox = await _jiljuBox;
     var jiljuTagBox = await _jiljuTagBox;
     await jiljuBox.putAll(Map.from(json['jilju'])
