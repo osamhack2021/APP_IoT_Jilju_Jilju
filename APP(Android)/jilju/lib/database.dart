@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:hive_flutter/hive_flutter.dart';
@@ -101,20 +102,27 @@ class DatabaseManager {
     await jiljuTagBox.clear();
   }
 
-  static Future<Map<String, dynamic>> toJson() async {
+  static Future<String> toJson() async {
     var jiljuBox = await _jiljuBox;
     var jiljuTagBox = await _jiljuTagBox;
-    return {
-      'jilju': jiljuBox.toMap(),
-      'jiljuTag': jiljuTagBox.toMap(),
+    Map<String, dynamic> json = {
+      'jilju': jiljuBox.toMap().map(
+          (key, value) => MapEntry(key.toString(), value.simplifyPoints())),
+      'jiljuTag': jiljuTagBox
+          .toMap()
+          .map((key, value) => MapEntry(key.toString(), value)),
     };
+    return jsonEncode(json);
   }
 
-  static Future<void> fromJson(Map<String, dynamic> json) async {
+  static Future<void> fromJson(String jsonString) async {
+    Map<String, dynamic> json = jsonDecode(jsonString);
     await clearAllData();
     var jiljuBox = await _jiljuBox;
     var jiljuTagBox = await _jiljuTagBox;
-    await jiljuBox.putAll(json['jilju']);
-    await jiljuTagBox.putAll(json['jiljuTag']);
+    await jiljuBox.putAll(Map.from(json['jilju'])
+        .map((key, value) => MapEntry(key, Jilju.fromJson(value))));
+    await jiljuTagBox.putAll(Map.from(json['jiljuTag'])
+        .map((key, value) => MapEntry(key, JiljuTag.fromJson(value))));
   }
 }

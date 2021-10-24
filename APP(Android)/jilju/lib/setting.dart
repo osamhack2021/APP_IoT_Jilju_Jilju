@@ -229,6 +229,63 @@ class _SettingPageState extends State<SettingPage> {
                       children: const <Widget>[
                         Expanded(
                           child: Text(
+                            '데이터 백업하기',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  onTap: () async {
+                    var json = await DatabaseManager.toJson();
+                    debugPrint(json.toString());
+                  },
+                ),
+              ),
+              Card(
+                margin:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 0,
+                child: InkWell(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                    child: Row(
+                      children: const <Widget>[
+                        Expanded(
+                          child: Text(
+                            '데이터 복원하기',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  onTap: () async {
+                    var json = await DatabaseManager.toJson();
+                    await DatabaseManager.fromJson(json);
+                    debugPrint('success...');
+                  },
+                ),
+              ),
+              Card(
+                margin:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 0,
+                child: InkWell(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                    child: Row(
+                      children: const <Widget>[
+                        Expanded(
+                          child: Text(
                             '모든 데이터 지우기',
                             style: TextStyle(fontSize: 20),
                           ),

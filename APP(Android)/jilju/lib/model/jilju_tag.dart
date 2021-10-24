@@ -12,22 +12,22 @@ class JiljuTag extends HiveObject {
   String name;
 
   @HiveField(1)
-  List<Jilju> jiljus;
+  List<int> jiljuIds;
 
-  JiljuTag(this.name, {this.jiljus = const []}) {
-    jiljus = jiljus.toList();
+  JiljuTag(this.name, {this.jiljuIds = const []}) {
+    jiljuIds = jiljuIds.toList();
   }
 
   void addJilju(Jilju jilju) {
-    if (jiljus.contains(jilju)) {
+    if (jiljuIds.contains(jilju.id)) {
       return;
     }
-    jiljus.add(jilju);
+    jiljuIds.add(jilju.id);
     save();
   }
 
   void removeJilju(Jilju jilju) {
-    jiljus.remove(jilju);
+    jiljuIds.remove(jilju.id);
     save();
   }
 
