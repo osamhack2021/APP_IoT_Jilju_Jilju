@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:jilju/theme.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -110,6 +112,58 @@ class _SettingPageState extends State<SettingPage> {
               onPressed: () {
                 Navigator.pop(context, _themeSelectionValue);
               },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> showBackupCompleteDialog(String backupCode) async {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('백업 완료'),
+          content: Wrap(
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      const Expanded(
+                        child: Text('백업 코드', style: TextStyle(fontSize: 16)),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.content_copy, size: 14),
+                        onPressed: () {
+                          Clipboard.setData(ClipboardData(text: backupCode));
+                        },
+                        splashRadius: 14,
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Text(
+                      backupCode,
+                      style: const TextStyle(fontSize: 14),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    MessageManager.messageString[14],
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () => Navigator.pop(context),
             ),
           ],
         );
@@ -237,8 +291,15 @@ class _SettingPageState extends State<SettingPage> {
                     ),
                   ),
                   onTap: () async {
-                    var json = await DatabaseManager.toJson();
-                    debugPrint(json.toString());
+                    _setProgressVisible(true);
+                    DocumentReference df = await FirebaseFirestore.instance
+                        .collection('jilju')
+                        .add({
+                      'data': await DatabaseManager.toJson(),
+                      'timestamp': DateTime.now().millisecondsSinceEpoch,
+                    });
+                    _setProgressVisible(false);
+                    await showBackupCompleteDialog(df.id);
                   },
                 ),
               ),
@@ -265,9 +326,13 @@ class _SettingPageState extends State<SettingPage> {
                     ),
                   ),
                   onTap: () async {
-                    var json = await DatabaseManager.toJson();
-                    await DatabaseManager.fromJson(json);
-                    debugPrint('success...');
+                    DocumentSnapshot ds = await FirebaseFirestore.instance
+                        .collection('jilju')
+                        .doc('fHh6SGwa1eVBnz36s5Ub')
+                        .get();
+                    Map<String, dynamic> data =
+                        ds.data() as Map<String, dynamic>;
+                    await DatabaseManager.fromJson(data['data']);
                   },
                 ),
               ),
