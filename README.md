@@ -12,7 +12,7 @@
 본 프로젝트는 오픈 소스 프로젝트로 진행되며, 본 프로젝트에 관심이 있는 개발자와 사용자를 위하여 **튜토리얼 GitBook**을 제공하고 있습니다.
 
 <p align="center">
-  <a href="https://jilju-1.gitbook.io/jilju/" target="_blank">
+  <a href="https://jilju-2.gitbook.io/jilju/" target="_blank">
     <img src="https://img.shields.io/badge/GitBook-project_doc-blue?&style=for-the-badge&logo=github" />
   </a>
 </p>
@@ -27,7 +27,7 @@
 </p>
 
 ## License
-라이선스의 구체적인 내용 및 서드 파티 소프트웨어에 대해서는 본 레퍼지토리의 LICENSE.md 파일 및 튜토리얼 GitBook의 <a href="https://jilju-1.gitbook.io/jilju/license">LICENSE 페이지</a>를 참조하십시오.
+라이선스의 구체적인 내용 및 서드 파티 소프트웨어에 대해서는 본 레퍼지토리의 LICENSE.md 파일 및 튜토리얼 GitBook의 <a href="https://jilju-2.gitbook.io/jilju/license">LICENSE 페이지</a>를 참조하십시오.
 * APP: BSD 3-Clause
 * IoT: GPL v3
 
