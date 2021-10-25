@@ -18,7 +18,7 @@ class JiljuTagAdapter extends TypeAdapter<JiljuTag> {
     };
     return JiljuTag(
       fields[0] as String,
-      jiljus: (fields[1] as List).cast<Jilju>(),
+      jiljuIds: (fields[1] as List).cast<int>(),
     );
   }
 
@@ -29,7 +29,7 @@ class JiljuTagAdapter extends TypeAdapter<JiljuTag> {
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
-      ..write(obj.jiljus);
+      ..write(obj.jiljuIds);
   }
 
   @override
@@ -42,3 +42,19 @@ class JiljuTagAdapter extends TypeAdapter<JiljuTag> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+JiljuTag _$JiljuTagFromJson(Map<String, dynamic> json) => JiljuTag(
+      json['name'] as String,
+      jiljuIds:
+          (json['jiljuIds'] as List<dynamic>?)?.map((e) => e as int).toList() ??
+              const [],
+    );
+
+Map<String, dynamic> _$JiljuTagToJson(JiljuTag instance) => <String, dynamic>{
+      'name': instance.name,
+      'jiljuIds': instance.jiljuIds,
+    };

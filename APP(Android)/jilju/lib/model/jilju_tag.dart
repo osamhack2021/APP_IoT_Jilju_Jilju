@@ -1,31 +1,38 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 import 'jilju.dart';
 
 part 'jilju_tag.g.dart';
 
+@JsonSerializable()
 @HiveType(typeId: 2)
 class JiljuTag extends HiveObject {
   @HiveField(0)
   String name;
 
   @HiveField(1)
-  List<Jilju> jiljus;
+  List<int> jiljuIds;
 
-  JiljuTag(this.name, {this.jiljus = const []}) {
-    jiljus = jiljus.toList();
+  JiljuTag(this.name, {this.jiljuIds = const []}) {
+    jiljuIds = jiljuIds.toList();
   }
 
   void addJilju(Jilju jilju) {
-    if (jiljus.contains(jilju)) {
+    if (jiljuIds.contains(jilju.id)) {
       return;
     }
-    jiljus.add(jilju);
+    jiljuIds.add(jilju.id);
     save();
   }
 
   void removeJilju(Jilju jilju) {
-    jiljus.remove(jilju);
+    jiljuIds.remove(jilju.id);
     save();
   }
+
+  factory JiljuTag.fromJson(Map<String, dynamic> json) =>
+      _$JiljuTagFromJson(json);
+
+  Map<String, dynamic> toJson() => _$JiljuTagToJson(this);
 }

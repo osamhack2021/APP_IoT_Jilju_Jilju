@@ -3,9 +3,8 @@ import 'package:jilju/theme.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'database.dart';
-import 'main.dart';
 import 'message.dart';
+import 'setting_data.dart';
 import 'util.dart';
 
 class SettingPage extends StatefulWidget {
@@ -117,12 +116,6 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
-  void _setProgressVisible(bool visible) {
-    context
-        .findAncestorStateOfType<JiljuMainPageState>()!
-        .setProgressVisible(visible);
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -229,23 +222,20 @@ class _SettingPageState extends State<SettingPage> {
                       children: const <Widget>[
                         Expanded(
                           child: Text(
-                            '모든 데이터 지우기',
+                            '데이터 관리',
                             style: TextStyle(fontSize: 20),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  onTap: () async {
-                    bool? clear =
-                        await MessageManager.showYesNoDialog(context, 12);
-                    if (clear == null || !clear) {
-                      return;
-                    }
-                    _setProgressVisible(true);
-                    await DatabaseManager.clearAllData();
-                    _setProgressVisible(false);
-                    await MessageManager.showMessageDialog(context, 13);
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SettingDataPage(),
+                      ),
+                    );
                   },
                 ),
               ),

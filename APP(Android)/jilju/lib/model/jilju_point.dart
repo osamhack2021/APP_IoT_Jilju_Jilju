@@ -1,8 +1,10 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'jilju_point.g.dart';
 
+@JsonSerializable()
 @HiveType(typeId: 1)
 class JiljuPoint extends HiveObject {
   @HiveField(0)
@@ -32,4 +34,9 @@ class JiljuPoint extends HiveObject {
             _latitude, _longitude, other._latitude, other._longitude) /
         1000;
   }
+
+  factory JiljuPoint.fromJson(Map<String, dynamic> json) =>
+      _$JiljuPointFromJson(json);
+
+  Map<String, dynamic> toJson() => _$JiljuPointToJson(this);
 }

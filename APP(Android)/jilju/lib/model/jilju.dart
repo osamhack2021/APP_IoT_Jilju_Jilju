@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 import '../database.dart';
 import 'jilju_point.dart';
@@ -6,6 +7,7 @@ import 'jilju_tag.dart';
 
 part 'jilju.g.dart';
 
+@JsonSerializable()
 @HiveType(typeId: 0)
 class Jilju extends HiveObject {
   @HiveField(0)
@@ -46,7 +48,7 @@ class Jilju extends HiveObject {
   Future<List<JiljuTag>> jiljuTags() async {
     List<JiljuTag> jiljuTags = await DatabaseManager.getAllJiljuTags();
     jiljuTags =
-        jiljuTags.where((jiljuTag) => jiljuTag.jiljus.contains(this)).toList();
+        jiljuTags.where((jiljuTag) => jiljuTag.jiljuIds.contains(id)).toList();
     return jiljuTags;
   }
 
@@ -61,12 +63,39 @@ class Jilju extends HiveObject {
     points.add(jiljuPoint);
   }
 
+  factory Jilju.fromJson(Map<String, dynamic> json) => _$JiljuFromJson(json);
+
+  Map<String, dynamic> toJson() => _$JiljuToJson(this);
+
   @override
   int get hashCode => id;
 
   @override
   bool operator ==(Object other) {
     return other is Jilju && hashCode == other.hashCode;
+  }
+
+  Jilju simplifyPoints() {
+    Jilju simplified = Jilju(id, startTime, endTime, distance, []);
+    simplified.points.add(points[0]);
+    int from = 0;
+    while (from < points.length - 1) {
+      int to = from + 1;
+      double sumOfDistance = points[from].calculateDistance(points[to]);
+      while (to < points.length - 1) {
+        sumOfDistance += points[to].calculateDistance(points[to + 1]);
+        if (sumOfDistance - points[from].calculateDistance(points[to + 1]) >
+            0.01) {
+          break;
+        }
+        to++;
+      }
+      simplified.points.add(points[to]);
+      from = to;
+    }
+    return points.length == simplified.points.length
+        ? simplified
+        : simplified.simplifyPoints();
   }
 
   static double getSumOfDistance(List<Jilju> jiljuList) {

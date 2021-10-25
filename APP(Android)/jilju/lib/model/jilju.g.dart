@@ -51,3 +51,25 @@ class JiljuAdapter extends TypeAdapter<Jilju> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+Jilju _$JiljuFromJson(Map<String, dynamic> json) => Jilju(
+      json['id'] as int,
+      json['startTime'] as int,
+      json['endTime'] as int,
+      (json['distance'] as num).toDouble(),
+      (json['points'] as List<dynamic>)
+          .map((e) => JiljuPoint.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$JiljuToJson(Jilju instance) => <String, dynamic>{
+      'id': instance.id,
+      'startTime': instance.startTime,
+      'endTime': instance.endTime,
+      'distance': instance.distance,
+      'points': instance.points,
+    };

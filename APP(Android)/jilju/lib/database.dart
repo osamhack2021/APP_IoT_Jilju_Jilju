@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:hive_flutter/hive_flutter.dart';
@@ -99,5 +100,28 @@ class DatabaseManager {
     var jiljuTagBox = await _jiljuTagBox;
     await jiljuBox.clear();
     await jiljuTagBox.clear();
+  }
+
+  static Future<String> toJson() async {
+    var jiljuBox = await _jiljuBox;
+    var jiljuTagBox = await _jiljuTagBox;
+    Map<String, dynamic> json = {
+      'jilju': jiljuBox.toMap().map(
+          (key, value) => MapEntry(key.toString(), value.simplifyPoints())),
+      'jiljuTag': jiljuTagBox
+          .toMap()
+          .map((key, value) => MapEntry(key.toString(), value)),
+    };
+    return jsonEncode(json);
+  }
+
+  static Future<void> fromJson(String jsonString) async {
+    Map<String, dynamic> json = jsonDecode(jsonString);
+    var jiljuBox = await _jiljuBox;
+    var jiljuTagBox = await _jiljuTagBox;
+    await jiljuBox.putAll(Map.from(json['jilju'])
+        .map((key, value) => MapEntry(key, Jilju.fromJson(value))));
+    await jiljuTagBox.putAll(Map.from(json['jiljuTag'])
+        .map((key, value) => MapEntry(key, JiljuTag.fromJson(value))));
   }
 }
