@@ -75,6 +75,9 @@ dependencies:
   # json_annotation 4.3.0
   # https://pub.dev/packages/json_annotation
   json_annotation: ^4.3.0
+  # provider 6.0.1
+  # https://pub.dev/packages/provider
+  provider: ^6.0.1
 
 dev_dependencies:
   flutter_test:
