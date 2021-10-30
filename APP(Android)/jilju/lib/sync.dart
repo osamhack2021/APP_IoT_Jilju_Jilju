@@ -18,17 +18,14 @@ class SyncPage extends StatefulWidget {
 }
 
 class _SyncPageState extends State<SyncPage> {
-  final List<dynamic> _devices = [];
+  final List<BluetoothDevice> _devices = [];
   final Guid _ftpServiceGuid = Guid('0000181900001000800000805f9b34fb');
   final Guid _fileIdCharGuid = Guid('00002ac300001000800000805f9b34fb');
   final Guid _fileDataCharGuid = Guid('00002a6700001000800000805f9b34fb');
   final TextEditingController _passwordController = TextEditingController();
   bool _connectBtnPressed = false;
 
-  void _addDeviceToSet(dynamic device) {
-    if (device is! BluetoothDevice && device is! _VirtualDevice) {
-      throw Exception();
-    }
+  void _addDeviceToSet(BluetoothDevice device) {
     setState(() {
       if (!_devices.contains(device)) {
         _devices.add(device);
@@ -85,17 +82,7 @@ class _SyncPageState extends State<SyncPage> {
     return fileData!;
   }
 
-  Future<void> _connectToDevice(dynamic device) async {
-    if (device is BluetoothDevice) {
-      await _connectToBluetoothDevice(device);
-    } else if (device is _VirtualDevice) {
-      await _connectToVirtualDevice(device);
-    } else {
-      throw Exception();
-    }
-  }
-
-  Future<void> _connectToBluetoothDevice(BluetoothDevice device) async {
+  Future<void> _connectToDevice(BluetoothDevice device) async {
     try {
       await device.connect();
     } on PlatformException catch (e) {
@@ -134,19 +121,6 @@ class _SyncPageState extends State<SyncPage> {
     await device.disconnect();
     _setProgressVisible(false);
     await MessageManager.showMessageDialog(context, 0);
-  }
-
-  Future<void> _connectToVirtualDevice(_VirtualDevice device) async {
-    int? password = await _showPasswordInputDialog();
-    if (password == null) {
-      return;
-    }
-    _setProgressVisible(true);
-    DatabaseManager.loadSampleData(password);
-    Future.delayed(const Duration(seconds: 10), () async {
-      _setProgressVisible(false);
-      await MessageManager.showMessageDialog(context, 0);
-    });
   }
 
   Future<int?> _showPasswordInputDialog() async {
@@ -268,10 +242,4 @@ class _SyncPageState extends State<SyncPage> {
       );
     }
   }
-}
-
-class _VirtualDevice {
-  _VirtualDevice(this.id);
-
-  final String id;
 }

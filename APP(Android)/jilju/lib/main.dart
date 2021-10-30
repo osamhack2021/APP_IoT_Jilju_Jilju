@@ -68,8 +68,8 @@ class JiljuMainPageState extends State<JiljuMainPage> {
     const SyncPage(),
     const SettingPage(),
   ];
-  int _index = 0;
-  bool _isProgressVisible = false;
+  var _index = 0;
+  var _isProgressVisible = false;
 
   void setProgressVisible(bool visible) {
     setState(() {
