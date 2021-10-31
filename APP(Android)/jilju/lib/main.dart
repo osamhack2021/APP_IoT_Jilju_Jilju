@@ -68,54 +68,28 @@ class JiljuMainPageState extends State<JiljuMainPage> {
     const SettingPage(),
   ];
   var _index = 0;
-  var _isProgressVisible = false;
-
-  void setProgressVisible(bool visible) {
-    setState(() {
-      _isProgressVisible = visible;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Scaffold(
-          body: SafeArea(child: _pages[_index]),
-          bottomNavigationBar: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            onTap: (index) {
-              setState(() {
-                _index = index;
-              });
-            },
-            currentIndex: _index,
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(label: '', icon: Icon(Icons.home)),
-              BottomNavigationBarItem(label: '', icon: Icon(Icons.event_note)),
-              BottomNavigationBarItem(label: '', icon: Icon(Icons.sync)),
-              BottomNavigationBarItem(label: '', icon: Icon(Icons.settings)),
-            ],
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-          ),
-        ),
-        Visibility(
-          visible: _isProgressVisible,
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            color: Colors.transparent,
-            child: const Center(
-              child: SizedBox(
-                width: 100,
-                height: 100,
-                child: CircularProgressIndicator(),
-              ),
-            ),
-          ),
-        ),
-      ],
+    return Scaffold(
+      body: SafeArea(child: _pages[_index]),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        onTap: (index) {
+          setState(() {
+            _index = index;
+          });
+        },
+        currentIndex: _index,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(label: '', icon: Icon(Icons.home)),
+          BottomNavigationBarItem(label: '', icon: Icon(Icons.event_note)),
+          BottomNavigationBarItem(label: '', icon: Icon(Icons.sync)),
+          BottomNavigationBarItem(label: '', icon: Icon(Icons.settings)),
+        ],
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+      ),
     );
   }
 }

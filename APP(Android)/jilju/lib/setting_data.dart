@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 
 import 'database.dart';
 import 'message.dart';
+import 'util.dart';
 
 class SettingDataPage extends StatefulWidget {
   const SettingDataPage({Key? key}) : super(key: key);
@@ -13,7 +14,6 @@ class SettingDataPage extends StatefulWidget {
 }
 
 class _SettingDataPageState extends State<SettingDataPage> {
-  bool _isProgressVisible = false;
   final TextEditingController _backupCodeController = TextEditingController();
 
   Future<void> _showBackupCompleteDialog(String backupCode) async {
@@ -96,167 +96,137 @@ class _SettingDataPageState extends State<SettingDataPage> {
     );
   }
 
-  void setProgressVisible(bool visible) {
-    setState(() {
-      _isProgressVisible = visible;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Scaffold(
-          appBar: AppBar(
-            title: const Text('데이터 관리'),
-          ),
-          body: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(height: 10),
-                Card(
-                  margin:
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('데이터 관리'),
+      ),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(height: 10),
+            Card(
+              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 0,
+              child: InkWell(
+                child: Padding(
+                  padding:
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
-                  child: InkWell(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 20),
-                      child: Row(
-                        children: const <Widget>[
-                          Expanded(
-                            child: Text(
-                              '데이터 백업하기',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                          ),
-                        ],
+                  child: Row(
+                    children: const <Widget>[
+                      Expanded(
+                        child: Text(
+                          '데이터 백업하기',
+                          style: TextStyle(fontSize: 20),
+                        ),
                       ),
-                    ),
-                    onTap: () async {
-                      setProgressVisible(true);
-                      DocumentReference df = await FirebaseFirestore.instance
-                          .collection('jilju')
-                          .add({
-                        'data': await DatabaseManager.toJson(),
-                        'timestamp': DateTime.now().millisecondsSinceEpoch,
-                      });
-                      setProgressVisible(false);
-                      await _showBackupCompleteDialog(df.id);
-                    },
+                    ],
                   ),
                 ),
-                Card(
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
-                  child: InkWell(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 20),
-                      child: Row(
-                        children: const <Widget>[
-                          Expanded(
-                            child: Text(
-                              '데이터 복원하기',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    onTap: () async {
-                      String? backupCode = await _showBackupCodeInputDialog();
-                      if (backupCode == null) {
-                        return;
-                      }
-                      setProgressVisible(true);
-                      DocumentSnapshot ds = await FirebaseFirestore.instance
-                          .collection('jilju')
-                          .doc(backupCode)
-                          .get();
-                      setProgressVisible(false);
-                      if (ds.data() == null) {
-                        await MessageManager.showMessageDialog(context, 15);
-                        return;
-                      }
-                      Map<String, dynamic> data =
-                          ds.data() as Map<String, dynamic>;
-                      bool? restore =
-                          await MessageManager.showYesNoDialog(context, 16);
-                      if (restore == null || !restore) {
-                        return;
-                      }
-                      setProgressVisible(true);
-                      await DatabaseManager.clearAllData();
-                      await DatabaseManager.fromJson(data['data']);
-                      await MessageManager.showMessageDialog(context, 17);
-                      setProgressVisible(false);
-                    },
-                  ),
-                ),
-                Card(
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
-                  child: InkWell(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 20),
-                      child: Row(
-                        children: const <Widget>[
-                          Expanded(
-                            child: Text(
-                              '모든 데이터 지우기',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    onTap: () async {
-                      bool? clear =
-                          await MessageManager.showYesNoDialog(context, 12);
-                      if (clear == null || !clear) {
-                        return;
-                      }
-                      setProgressVisible(true);
-                      await DatabaseManager.clearAllData();
-                      setProgressVisible(false);
-                      await MessageManager.showMessageDialog(context, 13);
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Visibility(
-          visible: _isProgressVisible,
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            color: Colors.transparent,
-            child: const Center(
-              child: SizedBox(
-                width: 100,
-                height: 100,
-                child: CircularProgressIndicator(),
+                onTap: () async {
+                  setProgressVisible(context, true);
+                  DocumentReference df =
+                      await FirebaseFirestore.instance.collection('jilju').add({
+                    'data': await DatabaseManager.toJson(),
+                    'timestamp': DateTime.now().millisecondsSinceEpoch,
+                  });
+                  setProgressVisible(context, false);
+                  await _showBackupCompleteDialog(df.id);
+                },
               ),
             ),
-          ),
+            Card(
+              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 0,
+              child: InkWell(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  child: Row(
+                    children: const <Widget>[
+                      Expanded(
+                        child: Text(
+                          '데이터 복원하기',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                onTap: () async {
+                  String? backupCode = await _showBackupCodeInputDialog();
+                  if (backupCode == null) {
+                    return;
+                  }
+                  setProgressVisible(context, true);
+                  DocumentSnapshot ds = await FirebaseFirestore.instance
+                      .collection('jilju')
+                      .doc(backupCode)
+                      .get();
+                  setProgressVisible(context, false);
+                  if (ds.data() == null) {
+                    await MessageManager.showMessageDialog(context, 15);
+                    return;
+                  }
+                  Map<String, dynamic> data = ds.data() as Map<String, dynamic>;
+                  bool? restore =
+                      await MessageManager.showYesNoDialog(context, 16);
+                  if (restore == null || !restore) {
+                    return;
+                  }
+                  setProgressVisible(context, true);
+                  await DatabaseManager.clearAllData();
+                  await DatabaseManager.fromJson(data['data']);
+                  await MessageManager.showMessageDialog(context, 17);
+                  setProgressVisible(context, false);
+                },
+              ),
+            ),
+            Card(
+              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 0,
+              child: InkWell(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  child: Row(
+                    children: const <Widget>[
+                      Expanded(
+                        child: Text(
+                          '모든 데이터 지우기',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                onTap: () async {
+                  bool? clear =
+                      await MessageManager.showYesNoDialog(context, 12);
+                  if (clear == null || !clear) {
+                    return;
+                  }
+                  setProgressVisible(context, true);
+                  await DatabaseManager.clearAllData();
+                  setProgressVisible(context, false);
+                  await MessageManager.showMessageDialog(context, 13);
+                },
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

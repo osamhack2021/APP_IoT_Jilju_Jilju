@@ -6,9 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
 import 'database.dart';
-import 'main.dart';
 import 'message.dart';
 import 'model/jilju.dart';
+import 'util.dart';
 
 class SyncPage extends StatefulWidget {
   const SyncPage({Key? key}) : super(key: key);
@@ -109,7 +109,7 @@ class _SyncPageState extends State<SyncPage> {
     if (password == null) {
       return;
     }
-    _setProgressVisible(true);
+    setProgressVisible(context, true);
     await _writeIntegerToCharacteristic(fileIdChar, password);
     for (int fileId = await DatabaseManager.getNextJiljuId();; fileId++) {
       String fileData = await _readFileData(fileId, fileIdChar, fileDataChar);
@@ -119,7 +119,7 @@ class _SyncPageState extends State<SyncPage> {
       DatabaseManager.putJilju(fileId, Jilju.fromFileData(fileId, fileData));
     }
     await device.disconnect();
-    _setProgressVisible(false);
+    setProgressVisible(context, false);
     await MessageManager.showMessageDialog(context, 0);
   }
 
@@ -157,12 +157,6 @@ class _SyncPageState extends State<SyncPage> {
         );
       },
     );
-  }
-
-  void _setProgressVisible(bool visible) {
-    context
-        .findAncestorStateOfType<JiljuMainPageState>()!
-        .setProgressVisible(visible);
   }
 
   @override
