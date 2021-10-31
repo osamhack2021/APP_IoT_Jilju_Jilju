@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jilju/theme.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'message.dart';
@@ -16,7 +17,7 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
   late int _userWeight, _numberPickerValue;
-  late JiljuTheme _jiljuTheme, _themeSelectionValue;
+  late JiljuTheme _themeSelectionValue;
 
   Future<int?> _showWeightInputDialog() async {
     _numberPickerValue = _userWeight;
@@ -55,8 +56,8 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
-  Future<JiljuTheme?> _showThemeSelectionDialog() async {
-    _themeSelectionValue = _jiljuTheme;
+  Future<JiljuTheme?> _showThemeSelectionDialog(JiljuTheme currentTheme) async {
+    _themeSelectionValue = currentTheme;
     return showDialog(
       context: context,
       builder: (context) {
@@ -67,33 +68,33 @@ class _SettingPageState extends State<SettingPage> {
               return Wrap(
                 children: <Widget>[
                   Column(
-                    children: JiljuTheme.values
-                        .map((jiljuTheme) => SizedBox(
-                              height: 50,
-                              child: InkWell(
-                                child: Row(
-                                  children: <Widget>[
-                                    Radio<JiljuTheme>(
-                                        value: jiljuTheme,
-                                        groupValue: _themeSelectionValue,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _themeSelectionValue = value!;
-                                          });
-                                        }),
-                                    const SizedBox(width: 10),
-                                    Text(jiljuTheme.name,
-                                        style: const TextStyle(fontSize: 20)),
-                                  ],
-                                ),
-                                onTap: () {
-                                  setState(() {
-                                    _themeSelectionValue = jiljuTheme;
-                                  });
-                                },
-                              ),
-                            ))
-                        .toList(),
+                    children: JiljuTheme.values.map((jiljuTheme) {
+                      return SizedBox(
+                        height: 50,
+                        child: InkWell(
+                          child: Row(
+                            children: <Widget>[
+                              Radio<JiljuTheme>(
+                                  value: jiljuTheme,
+                                  groupValue: _themeSelectionValue,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _themeSelectionValue = value!;
+                                    });
+                                  }),
+                              const SizedBox(width: 10),
+                              Text(jiljuTheme.name,
+                                  style: const TextStyle(fontSize: 20)),
+                            ],
+                          ),
+                          onTap: () {
+                            setState(() {
+                              _themeSelectionValue = jiljuTheme;
+                            });
+                          },
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ],
               );
@@ -118,133 +119,127 @@ class _SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getAllSettings(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          Map<String, dynamic> settings = snapshot.data as Map<String, dynamic>;
-          _userWeight = settings['userWeight'];
-          _jiljuTheme = settings['theme'];
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(height: 20),
-              const Center(
-                child: Text('설정', style: TextStyle(fontSize: 20)),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        const SizedBox(height: 20),
+        const Center(
+          child: Text('설정', style: TextStyle(fontSize: 20)),
+        ),
+        const SizedBox(height: 10),
+        Card(
+          margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          elevation: 0,
+          child: InkWell(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              child: Row(
+                children: <Widget>[
+                  const Expanded(
+                    child: Text('몸무게', style: TextStyle(fontSize: 20)),
+                  ),
+                  FutureBuilder(
+                    future: getUserWeight(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        _userWeight = snapshot.data as int;
+                        return Text(
+                          '$_userWeight kg',
+                          style: const TextStyle(fontSize: 20),
+                        );
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    },
+                  ),
+                ],
               ),
-              const SizedBox(height: 10),
-              Card(
-                margin:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+            ),
+            onTap: () async {
+              int? weight = await _showWeightInputDialog();
+              if (weight == null) {
+                return;
+              }
+              setState(() {
+                setUserWeight(weight);
+              });
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 40),
+          child: Text(MessageManager.messageString[10],
+              style: const TextStyle(fontSize: 12)),
+        ),
+        const SizedBox(height: 10),
+        Card(
+          margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          elevation: 0,
+          child: Consumer(
+            builder: (context, ThemeChangeNotifier notifier, child) {
+              JiljuTheme jiljuTheme = notifier.theme;
+              return InkWell(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  child: Row(
+                    children: <Widget>[
+                      const Expanded(
+                          child: Text('테마', style: TextStyle(fontSize: 20))),
+                      Text(jiljuTheme.name,
+                          style: const TextStyle(fontSize: 20)),
+                    ],
+                  ),
                 ),
-                elevation: 0,
-                child: InkWell(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 20),
-                    child: Row(
-                      children: <Widget>[
-                        const Expanded(
-                            child: Text('몸무게', style: TextStyle(fontSize: 20))),
-                        Text('$_userWeight kg',
-                            style: const TextStyle(fontSize: 20)),
-                      ],
+                onTap: () async {
+                  JiljuTheme? _jiljuTheme =
+                      await _showThemeSelectionDialog(jiljuTheme);
+                  if (_jiljuTheme == null) {
+                    return;
+                  }
+                  notifier.theme = _jiljuTheme;
+                },
+              );
+            },
+          ),
+        ),
+        Card(
+          margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          elevation: 0,
+          child: InkWell(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              child: Row(
+                children: const <Widget>[
+                  Expanded(
+                    child: Text(
+                      '데이터 관리',
+                      style: TextStyle(fontSize: 20),
                     ),
                   ),
-                  onTap: () async {
-                    int? weight = await _showWeightInputDialog();
-                    if (weight == null) {
-                      return;
-                    }
-                    setState(() {
-                      setUserWeight(weight);
-                    });
-                  },
-                ),
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 40),
-                child: Text(MessageManager.messageString[10],
-                    style: const TextStyle(fontSize: 12)),
-              ),
-              const SizedBox(height: 10),
-              Card(
-                margin:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingDataPage(),
                 ),
-                elevation: 0,
-                child: InkWell(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 20),
-                    child: Row(
-                      children: <Widget>[
-                        const Expanded(
-                            child: Text('테마', style: TextStyle(fontSize: 20))),
-                        Text(_jiljuTheme.name,
-                            style: const TextStyle(fontSize: 20)),
-                      ],
-                    ),
-                  ),
-                  onTap: () async {
-                    JiljuTheme? jiljuTheme = await _showThemeSelectionDialog();
-                    if (jiljuTheme == null) {
-                      return;
-                    }
-                    setState(() {
-                      setTheme(jiljuTheme);
-                    });
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 40),
-                child: Text(MessageManager.messageString[11],
-                    style: const TextStyle(fontSize: 12)),
-              ),
-              const SizedBox(height: 10),
-              Card(
-                margin:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 0,
-                child: InkWell(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 20),
-                    child: Row(
-                      children: const <Widget>[
-                        Expanded(
-                          child: Text(
-                            '데이터 관리',
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SettingDataPage(),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          );
-        } else {
-          return const SizedBox.shrink();
-        }
-      },
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -270,11 +265,4 @@ Future<JiljuTheme> getTheme() async {
 Future<bool> setTheme(JiljuTheme jiljuTheme) async {
   var prefs = await SharedPreferences.getInstance();
   return prefs.setString('theme', jiljuTheme.name);
-}
-
-Future<Map<String, dynamic>> getAllSettings() async {
-  Map<String, dynamic> settings = {};
-  settings['userWeight'] = await getUserWeight();
-  settings['theme'] = await getTheme();
-  return settings;
 }

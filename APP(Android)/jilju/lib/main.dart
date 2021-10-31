@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 
 import 'detail.dart';
 import 'home.dart';
@@ -28,11 +29,11 @@ class JiljuApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getTheme(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          JiljuTheme jiljuTheme = snapshot.data as JiljuTheme;
+    return ChangeNotifierProvider(
+      create: (_) => ThemeChangeNotifier(),
+      child: Consumer(
+        builder: (context, ThemeChangeNotifier notifier, child) {
+          JiljuTheme jiljuTheme = notifier.theme;
           return MaterialApp(
             title: 'Jilju',
             theme: jiljuTheme.theme,
@@ -46,10 +47,8 @@ class JiljuApp extends StatelessWidget {
             ),
             debugShowCheckedModeBanner: false,
           );
-        } else {
-          return const SizedBox.shrink();
-        }
-      },
+        },
+      ),
     );
   }
 }
@@ -68,8 +67,8 @@ class JiljuMainPageState extends State<JiljuMainPage> {
     const SyncPage(),
     const SettingPage(),
   ];
-  int _index = 0;
-  bool _isProgressVisible = false;
+  var _index = 0;
+  var _isProgressVisible = false;
 
   void setProgressVisible(bool visible) {
     setState(() {
