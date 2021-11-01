@@ -185,8 +185,8 @@ class _SettingDataPageState extends State<SettingDataPage> {
                   setProgressVisible(context, true);
                   await DatabaseManager.clearAllData();
                   await DatabaseManager.fromJson(data['data']);
-                  await MessageManager.showMessageDialog(context, 17);
                   setProgressVisible(context, false);
+                  await MessageManager.showMessageDialog(context, 17);
                 },
               ),
             ),
