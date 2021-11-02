@@ -12,7 +12,7 @@ Future<String> readFileAsString(String fileName) {
 
 DateTime today() {
   DateTime now = DateTime.now();
-  return DateTime.utc(now.year, now.month, now.day);
+  return DateTime(now.year, now.month, now.day);
 }
 
 String dateToString(DateTime date) {
@@ -45,8 +45,9 @@ void setProgressVisible(BuildContext context, bool visible) {
   if (visible) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const IndicatorPage(),
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) => const IndicatorPage(),
+        opaque: false,
       ),
     );
   } else {
