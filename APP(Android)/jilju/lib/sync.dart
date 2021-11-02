@@ -116,7 +116,7 @@ class _SyncPageState extends State<SyncPage> {
       if (fileData == '') {
         break;
       }
-      DatabaseManager.putJilju(fileId, Jilju.fromFileData(fileId, fileData));
+      DatabaseManager.putJilju(Jilju.fromFileData(fileId, fileData));
     }
     await device.disconnect();
     setProgressVisible(context, false);

@@ -23,12 +23,33 @@ class _DetailPageState extends State<DetailPage> {
   _DetailPageState()
       : _startDate = today(),
         _endDate = today(),
-        _jiljuTags = [];
+        _jiljuMap = {today(): []},
+        _totalJiljuList = [],
+        _jiljuTags = [] {
+    _updateJiljuData();
+  }
 
   DateTime _startDate;
   DateTime _endDate;
+  Map<DateTime, List<Jilju>> _jiljuMap;
+  List<Jilju> _totalJiljuList;
   final List<JiljuTag> _jiljuTags;
   final TextEditingController _tagNameController = TextEditingController();
+
+  Future<void> _updateJiljuData() async {
+    _jiljuMap = await DatabaseManager.getJiljuMap(
+        _startDate, _endDate.difference(_startDate).inDays + 1);
+    _jiljuMap.updateAll((dateTime, jiljuList) {
+      for (JiljuTag jiljuTag in _jiljuTags) {
+        jiljuList = jiljuList
+            .where((jilju) => jiljuTag.jiljuIds.contains(jilju.id))
+            .toList();
+      }
+      return jiljuList;
+    });
+    _totalJiljuList = _jiljuMap.values.reduce((a, b) => [...a, ...b]);
+    setState(() {});
+  }
 
   Future<void> _showJiljuDetailDialog(Jilju jilju) async {
     List<JiljuTag> jiljuTags = await jilju.jiljuTags();
@@ -278,16 +299,15 @@ class _DetailPageState extends State<DetailPage> {
         DateTimeRange? dateTimeRange = await showDateRangePicker(
           context: context,
           initialDateRange: DateTimeRange(start: _startDate, end: _endDate),
-          firstDate: DateTime.utc(2020, 1, 1),
-          lastDate: DateTime.utc(2029, 12, 31),
+          firstDate: DateTime(2020, 1, 1),
+          lastDate: DateTime(2029, 12, 31),
         );
         if (dateTimeRange == null) {
           return;
         }
-        setState(() {
-          _startDate = dateTimeRange.start;
-          _endDate = dateTimeRange.end;
-        });
+        _startDate = dateTimeRange.start;
+        _endDate = dateTimeRange.end;
+        _updateJiljuData();
       },
     );
   }
@@ -393,52 +413,76 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  ListView _buildListViewOfJiljus(List<Jilju> jiljuList) {
+  ListView _buildListViewOfJiljus() {
     return ListView.separated(
       itemBuilder: (context, index) {
-        return InkWell(
-          child: SizedBox(
-            height: 60,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: <Widget>[
-                  const Icon(Icons.directions_run, size: 20),
-                  Expanded(
-                    flex: 2,
-                    child: Center(
-                      child: Text(
-                        '${dateToString(secondsToDateTime(jiljuList[index].startTime))}\n'
-                        '${timeToString(secondsToDateTime(jiljuList[index].startTime))}'
-                        ' ~ ${timeToString(secondsToDateTime(jiljuList[index].endTime))}',
-                        style: const TextStyle(fontSize: 16),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Center(
-                      child: Text(
-                        '${jiljuList[index].distance.toStringAsFixed(1)} km\n'
-                        '${durationToString(jiljuList[index].totalTime)}',
-                        style: const TextStyle(fontSize: 16),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+        Jilju jilju = _totalJiljuList[index];
+        return Dismissible(
+          key: Key(jilju.id.toString()),
+          background: Container(
+            color: Colors.red,
+            alignment: Alignment.centerRight,
+            child: const Padding(
+              padding: EdgeInsets.only(right: 20),
+              child: Icon(Icons.delete_outline, size: 20),
             ),
           ),
-          onTap: () => _showJiljuDetailDialog(jiljuList[index]),
+          confirmDismiss: (direction) =>
+              MessageManager.showYesNoDialog(context, 18),
+          onDismissed: (direction) {
+            DatabaseManager.deleteJilju(jilju);
+            DateTime dateTime = secondsToDateTime(jilju.startTime);
+            dateTime = DateTime(dateTime.year, dateTime.month, dateTime.day);
+            setState(() {
+              _jiljuMap[dateTime]!.remove(jilju);
+              _totalJiljuList.remove(jilju);
+            });
+          },
+          direction: DismissDirection.endToStart,
+          child: InkWell(
+            child: SizedBox(
+              height: 60,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: <Widget>[
+                    const Icon(Icons.directions_run, size: 20),
+                    Expanded(
+                      flex: 2,
+                      child: Center(
+                        child: Text(
+                          '${dateToString(secondsToDateTime(jilju.startTime))}\n'
+                          '${timeToString(secondsToDateTime(jilju.startTime))}'
+                          ' ~ ${timeToString(secondsToDateTime(jilju.endTime))}',
+                          style: const TextStyle(fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Center(
+                        child: Text(
+                          '${jilju.distance.toStringAsFixed(1)} km\n'
+                          '${durationToString(jilju.totalTime)}',
+                          style: const TextStyle(fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            onTap: () => _showJiljuDetailDialog(jilju),
+          ),
         );
       },
       separatorBuilder: (context, index) => const Divider(
         height: 1,
         thickness: 1,
       ),
-      itemCount: jiljuList.length,
+      itemCount: _totalJiljuList.length,
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
     );
@@ -455,50 +499,28 @@ class _DetailPageState extends State<DetailPage> {
         ),
         const SizedBox(height: 20),
         Expanded(
-          child: FutureBuilder(
-            future: DatabaseManager.getJiljuMap(
-                _startDate, _endDate.difference(_startDate).inDays + 1),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                Map<DateTime, List<Jilju>> jiljuMap =
-                    snapshot.data as Map<DateTime, List<Jilju>>;
-                jiljuMap.updateAll((dateTime, jiljuList) {
-                  for (JiljuTag jiljuTag in _jiljuTags) {
-                    jiljuList = jiljuList
-                        .where((jilju) => jiljuTag.jiljuIds.contains(jilju.id))
-                        .toList();
-                  }
-                  return jiljuList;
-                });
-                List<Jilju> totalJiljuList =
-                    jiljuMap.values.reduce((a, b) => [...a, ...b]);
-                return SingleChildScrollView(
-                  child: Column(
-                    children: <Widget>[
-                      AspectRatio(
-                        aspectRatio: 1.2,
-                        child: Card(
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          elevation: 0,
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 20, 20, 0),
-                            child: jiljuMap.length <= 7
-                                ? JiljuBarChart(jiljuMap, null)
-                                : JiljuLineChart(jiljuMap),
-                          ),
-                        ),
-                      ),
-                      _buildListViewOfJiljus(totalJiljuList),
-                    ],
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                AspectRatio(
+                  aspectRatio: 1.2,
+                  child: Card(
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 20, 20, 0),
+                      child: _jiljuMap.length <= 7
+                          ? JiljuBarChart(_jiljuMap, null)
+                          : JiljuLineChart(_jiljuMap),
+                    ),
                   ),
-                );
-              } else {
-                return const SizedBox.shrink();
-              }
-            },
+                ),
+                _buildListViewOfJiljus(),
+              ],
+            ),
           ),
         ),
       ],

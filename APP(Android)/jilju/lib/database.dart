@@ -13,14 +13,14 @@ class DatabaseManager {
   static final Future<Box<JiljuTag>> _jiljuTagBox =
       Hive.openBox<JiljuTag>('jiljuTag');
 
-  static Future<void> putJilju(int id, Jilju jilju) async {
+  static Future<void> putJilju(Jilju jilju) async {
     var box = await _jiljuBox;
-    return box.put(id, jilju);
+    return box.put(jilju.id, jilju);
   }
 
-  static Future<Jilju?> getJilju(int id) async {
+  static Future<void> deleteJilju(Jilju jilju) async {
     var box = await _jiljuBox;
-    return box.get(id);
+    return box.delete(jilju.id);
   }
 
   static Future<void> putJiljuTag(JiljuTag jiljuTag) async {
@@ -87,8 +87,7 @@ class DatabaseManager {
               .millisecondsSinceEpoch;
           startTime ~/= 1000;
           String fileData = startTime.toString() + '\n' + sampleDatas[i - 1];
-          DatabaseManager.putJilju(
-              fileId, Jilju.fromFileData(fileId, fileData));
+          DatabaseManager.putJilju(Jilju.fromFileData(fileId, fileData));
           fileId++;
         }
       }
@@ -120,7 +119,7 @@ class DatabaseManager {
     var jiljuBox = await _jiljuBox;
     var jiljuTagBox = await _jiljuTagBox;
     await jiljuBox.putAll(Map.from(json['jilju'])
-        .map((key, value) => MapEntry(key, Jilju.fromJson(value))));
+        .map((key, value) => MapEntry(int.parse(key), Jilju.fromJson(value))));
     await jiljuTagBox.putAll(Map.from(json['jiljuTag'])
         .map((key, value) => MapEntry(key, JiljuTag.fromJson(value))));
   }

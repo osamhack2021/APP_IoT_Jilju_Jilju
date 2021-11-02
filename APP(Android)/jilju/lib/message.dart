@@ -23,6 +23,7 @@ class MessageManager {
     '서버에 저장된 데이터를 복원합니다. 기기에 저장된 데이터는 모두 지워집니다. '
         '이 작업은 돌이킬 수 없습니다.',
     '복원이 완료되었습니다.',
+    '질주를 삭제하시겠습니까?',
   ];
 
   static Future<void> showMessageDialog(
