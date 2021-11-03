@@ -1,6 +1,5 @@
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -69,29 +68,6 @@ class DatabaseManager {
   static Future<int> getNextJiljuId() async {
     var box = await _jiljuBox;
     return box.keys.isEmpty ? 1 : (box.keys.last + 1);
-  }
-
-  static Future<void> loadSampleData(int seed) async {
-    List<String> sampleDatas = [];
-    for (int i = 1; i < 3; i++) {
-      sampleDatas.add(await readFileAsString('sample_data_$i.txt'));
-    }
-    Random random = Random(seed);
-    int fileId = 1;
-    for (int day = -29; day <= 0; day++) {
-      int j = 0;
-      for (int i = 1; i < 3; i++) {
-        for (; random.nextBool(); j++) {
-          int startTime = DateTime.now()
-              .add(Duration(days: day, hours: j))
-              .millisecondsSinceEpoch;
-          startTime ~/= 1000;
-          String fileData = startTime.toString() + '\n' + sampleDatas[i - 1];
-          DatabaseManager.putJilju(Jilju.fromFileData(fileId, fileData));
-          fileId++;
-        }
-      }
-    }
   }
 
   static Future<void> clearAllData() async {
